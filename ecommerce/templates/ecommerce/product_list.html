@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}{% if category %}{{ category.name }} — {% endif %}Products — My Shop{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <!-- Page Header -->
+  <div class="mb-8">
+    {% if category %}
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ category.name }}</h1>
+      {% if category.description %}
+        <p class="text-gray-600">{{ category.description }}</p>
+      {% endif %}
+    {% else %}
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">All Products</h1>
+      <p class="text-gray-600">Discover our amazing collection of products</p>
+    {% endif %}
+  </div>
+
+  <!-- Product Grid -->
+  <section class="mb-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {% for product in products %}
+      <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group hover:transform hover:-translate-y-2">
+        <!-- Product Image -->
+        <div class="relative overflow-hidden">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                 class="h-56 w-full object-cover group-hover:scale-105 transition-transform duration-300">
+          {% else %}
+            <div class="h-56 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400">
+              <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+          {% endif %}
+          
+          <!-- Category Badge -->
+          {% if product.category %}
+          <div class="absolute top-3 left-3">
+            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-medium">
+              {{ product.category.name }}
+            </span>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Product Info -->
+        <div class="p-5 flex-1 flex flex-col">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">{{ product.name }}</h3>
+          
+          {% if product.description %}
+          <p class="text-gray-600 text-sm mb-3 line-clamp-2 flex-1">{{ product.description|truncatewords:15 }}</p>
+          {% endif %}
+          
+          <div class="mt-auto">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-2xl font-bold text-purple-700">Rs {{ product.price }}</span>
+              {% if product.is_active %}
+              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">In Stock</span>
+              {% else %}
+              <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Out of Stock</span>
+              {% endif %}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-2">
+              <a href="{% url 'ecommerce:product_detail' product.slug %}" 
+                 class="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-center font-semibold py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                View Details
+              </a>
+              <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-3 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-span-full text-center py-16">
+        <svg class="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+        </svg>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Products Found</h3>
+        <p class="text-gray-500 mb-4">We couldn't find any products matching your criteria.</p>
+        <a href="{% url 'ecommerce:product_list' %}" class="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+          Browse All Products
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Pagination -->
+  {% if products.has_other_pages %}
+  <div class="flex justify-center items-center space-x-2">
+    {% if products.has_previous %}
+      <a href="?page={{ products.previous_page_number }}{% if category %}&category={{ category.slug }}{% endif %}" 
+         class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Previous
+      </a>
+    {% endif %}
+
+    <div class="flex space-x-1">
+      {% for i in products.paginator.page_range %}
+        {% if products.number == i %}
+          <span class="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold">{{ i }}</span>
+        {% else %}
+          <a href="?page={{ i }}{% if category %}&category={{ category.slug }}{% endif %}" 
+             class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+            {{ i }}
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if products.has_next %}
+      <a href="?page={{ products.next_page_number }}{% if category %}&category={{ category.slug }}{% endif %}" 
+         class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center">
+        Next
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{% if category %}
+  <div class="text-center mt-10">
+    <a href="{% url 'ecommerce:add_product'%}" 
+       class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+      ➕ Add Product
+    </a>
+  </div>
+{% endif %}
+
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+{% endblock %}

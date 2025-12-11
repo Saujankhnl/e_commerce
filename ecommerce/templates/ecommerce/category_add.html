@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}Add Category - Ecommerce{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-8 fade-in">
+  <h2 class="text-3xl font-bold mb-8 text-purple-700 text-center">Add New Category</h2>
+
+  <form method="POST" class="bg-white p-8 rounded-xl shadow-lg border border-purple-100 space-y-6 form-validate">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="p-4 bg-red-50 border border-red-200 rounded-lg animate-pulse">
+        {% for error in form.non_field_errors %}
+          <p class="text-red-600 text-sm flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>{{ error }}
+          </p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Success Message Display -->
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div class="p-4 bg-green-50 border border-green-200 rounded-lg animate-bounce-in">
+          <p class="text-green-600 text-sm flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>{{ message }}
+          </p>
+        </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    <!-- Name Field -->
+    <div class="form-group">
+      <label for="{{ form.name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+        <i class="fas fa-tag mr-2 text-purple-500"></i>Category Name <span class="text-red-500">*</span>
+      </label>
+      <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" 
+             value="{{ form.name.value|default:'' }}"
+             placeholder="Enter category name (e.g., Electronics, Clothing)"
+             class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
+             required>
+      {% for error in form.name.errors %}
+        <p class="error-message text-red-600 text-sm mt-1 flex items-center">
+          <i class="fas fa-exclamation-triangle mr-1"></i>{{ error }}
+        </p>
+      {% endfor %}
+    </div>
+
+    <!-- Slug Field -->
+    <div class="form-group">
+      <label for="{{ form.slug.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+        <i class="fas fa-link mr-2 text-purple-500"></i>URL Slug
+      </label>
+      <input type="text" name="{{ form.slug.name }}" id="{{ form.slug.id_for_label }}" 
+             value="{{ form.slug.value|default:'' }}"
+             placeholder="Will auto-generate from name"
+             class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-gray-50 transition-all duration-300">
+      <p class="text-xs text-gray-500 mt-1 flex items-center">
+        <i class="fas fa-info-circle mr-1"></i>Auto-generated if left empty. Use lowercase letters, numbers, and hyphens.
+      </p>
+      {% for error in form.slug.errors %}
+        <p class="error-message text-red-600 text-sm mt-1 flex items-center">
+          <i class="fas fa-exclamation-triangle mr-1"></i>{{ error }}
+        </p>
+      {% endfor %}
+    </div>
+
+    <!-- Description Field -->
+    <div class="form-group">
+      <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+        <i class="fas fa-align-left mr-2 text-purple-500"></i>Description
+      </label>
+      <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" rows="4"
+                placeholder="Optional: Describe this category for better organization..."
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-vertical transition-all duration-300">{{ form.description.value|default:'' }}</textarea>
+      <div class="flex justify-between items-center mt-1">
+        <span class="text-xs text-gray-500">Max 500 characters</span>
+        <span id="char-count" class="text-xs text-gray-500">0/500</span>
+      </div>
+      {% for error in form.description.errors %}
+        <p class="error-message text-red-600 text-sm mt-1 flex items-center">
+          <i class="fas fa-exclamation-triangle mr-1"></i>{{ error }}
+        </p>
+      {% endfor %}
+    </div>
+
+    <!-- Form Buttons -->
+    <div class="flex gap-4 pt-4">
+      <button type="submit" id="submit-btn" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 shadow-lg hover:shadow-xl">
+        <i class="fas fa-plus-circle mr-2"></i>Create Category
+      </button>
+      <a href="{% url 'ecommerce:home' %}" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold px-6 py-3 rounded-lg text-center transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+        <i class="fas fa-times mr-2"></i>Cancel
+      </a>
+    </div>
+  </form>
+</div>
+
+<!-- Enhanced CSS -->
+<style>
+  .fade-in {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-bounce-in {
+    animation: bounceIn 0.6s ease-in-out;
+  }
+  
+  @keyframes bounceIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .form-input:focus {
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+    border-color: #9333ea;
+  }
+  
+  .form-input.error {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  }
+  
+  .form-group {
+    transition: all 0.3s ease;
+  }
+  
+  .loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  
+  .success-check {
+    color: #10b981;
+    animation: checkmark 0.5s ease-in-out;
+  }
+  
+  @keyframes checkmark {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  
+  .pulse {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+</style>
+
+<!-- Enhanced JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const nameField = document.getElementById('{{ form.name.id_for_label }}');
+  const slugField = document.getElementById('{{ form.slug.id_for_label }}');
+  const descriptionField = document.getElementById('{{ form.description.id_for_label }}');
+  const charCount = document.getElementById('char-count');
+  const submitBtn = document.getElementById('submit-btn');
+  const form = document.querySelector('.form-validate');
+
+  // Slug Auto-generation
+  function generateSlug(text) {
+    return text.toLowerCase().trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  if (nameField && slugField) {
+    nameField.addEventListener('input', function() {
+      if (!slugField.dataset.manualEdit && nameField.value.trim()) {
+        slugField.value = generateSlug(nameField.value);
+        validateSlug(slugField.value);
+      }
+      validateField(nameField);
+    });
+
+    slugField.addEventListener('input', function() {
+      if (slugField.value !== generateSlug(nameField.value)) {
+        slugField.dataset.manualEdit = 'true';
+      } else {
+        delete slugField.dataset.manualEdit;
+      }
+      validateSlug(slugField.value);
+    });
+
+    slugField.addEventListener('focus', function() {
+      if (slugField.value === '') delete slugField.dataset.manualEdit;
+    });
+  }
+
+  // Character Count for Description
+  if (descriptionField && charCount) {
+    descriptionField.addEventListener('input', function() {
+      const length = descriptionField.value.length;
+      charCount.textContent = `${length}/500`;
+      
+      if (length > 500) {
+        charCount.classList.add('text-red-500');
+        descriptionField.classList.add('error');
+      } else {
+        charCount.classList.remove('text-red-500');
+        descriptionField.classList.remove('error');
+      }
+    });
+    
+    // Initialize character count
+    charCount.textContent = `${descriptionField.value.length}/500`;
+  }
+
+  // Field Validation
+  function validateField(field) {
+    if (field.value.trim() === '') {
+      field.classList.add('error');
+      return false;
+    } else {
+      field.classList.remove('error');
+      return true;
+    }
+  }
+
+  function validateSlug(slug) {
+    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+    if (slug && !slugRegex.test(slug)) {
+      slugField.classList.add('error');
+      return false;
+    } else {
+      slugField.classList.remove('error');
+      return true;
+    }
+  }
+
+  // Form Submission Enhancement
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+      
+      // Validate required fields
+      if (!validateField(nameField)) isValid = false;
+      if (slugField.value && !validateSlug(slugField.value)) isValid = false;
+      
+      if (!isValid) {
+        e.preventDefault();
+        showNotification('Please correct the errors before submitting.', 'error');
+        return;
+      }
+      
+      // Show loading state
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
+      submitBtn.disabled = true;
+      submitBtn.classList.add('loading');
+    });
+  }
+
+  // Real-time Validation
+  [nameField, slugField].forEach(field => {
+    if (field) {
+      field.addEventListener('blur', function() {
+        if (field === nameField) validateField(field);
+        if (field === slugField && field.value) validateSlug(field.value);
+      });
+    }
+  });
+
+  // Notification System
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300 ${
+      type === 'error' ? 'bg-red-500 text-white' : 
+      type === 'success' ? 'bg-green-500 text-white' : 
+      'bg-blue-500 text-white'
+    }`;
+    notification.innerHTML = `
+      <div class="flex items-center">
+        <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'} mr-2"></i>
+        <span>${message}</span>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      notification.style.transform = 'translateX(100%)';
+      setTimeout(() => notification.remove(), 300);
+    }, 5000);
+  }
+
+  // Auto-focus on name field
+  if (nameField) {
+    nameField.focus();
+  }
+
+  // Add some interactive effects
+  document.querySelectorAll('.form-input').forEach(input => {
+    input.addEventListener('focus', function() {
+      this.parentElement.classList.add('ring-2', 'ring-purple-200', 'rounded-lg');
+    });
+    
+    input.addEventListener('blur', function() {
+      this.parentElement.classList.remove('ring-2', 'ring-purple-200', 'rounded-lg');
+    });
+  });
+});
+</script>
+{% endblock %}

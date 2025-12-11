@@ -1,0 +1,503 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Add Product — {{ category.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <!-- Header Section -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">
+      Add New Product to "{{ category.name }}"
+    </h1>
+    <p class="text-gray-600">Fill in the details below to add a new product to your store</p>
+  </div>
+
+  <!-- Form Section -->
+  <form method="POST" enctype="multipart/form-data" class="bg-white shadow-lg rounded-xl p-8 space-y-8" id="productForm">
+    {% csrf_token %}
+    
+    <!-- Form Errors Display -->
+    {% if form.errors %}
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">
+            There were errors with your submission. Please check the form below.
+          </h3>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Product Information Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Left Column -->
+      <div class="space-y-6">
+        <!-- Product Name -->
+        <div class="form-group">
+          <label for="id_name" class="block text-sm font-medium text-gray-700 mb-2">
+            Product Name *
+            {% if form.name.field.required %}<span class="text-red-500">*</span>{% endif %}
+          </label>
+          <input type="text" 
+                 name="name" 
+                 id="id_name" 
+                 value="{{ form.name.value|default:'' }}"
+                 required
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors {% if form.name.errors %}border-red-500{% endif %}"
+                 placeholder="Enter product name">
+          {% if form.name.errors %}
+            <div class="mt-2 text-sm text-red-600 space-y-1">
+              {% for error in form.name.errors %}
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Slug Field -->
+        <div class="form-group">
+          <label for="id_slug" class="block text-sm font-medium text-gray-700 mb-2">
+            URL Slug
+            {% if form.slug.field.required %}<span class="text-red-500">*</span>{% endif %}
+          </label>
+          <input type="text" 
+                 name="slug" 
+                 id="id_slug" 
+                 value="{{ form.slug.value|default:'' }}"
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors {% if form.slug.errors %}border-red-500{% endif %} bg-gray-50"
+                 placeholder="auto-generated-slug">
+          <p class="mt-1 text-xs text-gray-500 flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            Leave empty to auto-generate from product name
+          </p>
+          {% if form.slug.errors %}
+            <div class="mt-2 text-sm text-red-600">
+              {% for error in form.slug.errors %}
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Product Description -->
+        <div class="form-group">
+          <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">
+            Description
+            {% if form.description.field.required %}<span class="text-red-500">*</span>{% endif %}
+          </label>
+          <textarea name="description" 
+                    id="id_description" 
+                    rows="4"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-vertical {% if form.description.errors %}border-red-500{% endif %}"
+                    placeholder="Describe your product...">{{ form.description.value|default:'' }}</textarea>
+          {% if form.description.errors %}
+            <div class="mt-2 text-sm text-red-600">
+              {% for error in form.description.errors %}
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="space-y-6">
+        <!-- Category Field -->
+        <div class="form-group">
+          <label for="id_category" class="block text-sm font-medium text-gray-700 mb-2">
+            Category *
+            {% if form.category.field.required %}<span class="text-red-500">*</span>{% endif %}
+          </label>
+          <select name="category" 
+                  id="id_category" 
+                  required
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors {% if form.category.errors %}border-red-500{% endif %}">
+            <option value="">Select a category</option>
+            {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if form.category.value == cat.id or not form.category.value and cat.id == category.id %}selected{% endif %}>
+              {{ cat.name }}
+            </option>
+            {% endfor %}
+          </select>
+          {% if form.category.errors %}
+            <div class="mt-2 text-sm text-red-600">
+              {% for error in form.category.errors %}
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Price -->
+        <div class="form-group">
+          <label for="id_price" class="block text-sm font-medium text-gray-700 mb-2">
+            Price *
+            {% if form.price.field.required %}<span class="text-red-500">*</span>{% endif %}
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">Rs</span>
+            </div>
+            <input type="number" 
+                   name="price" 
+                   id="id_price" 
+                   step="0.01" 
+                   min="0" 
+                   required
+                   value="{{ form.price.value|default:'' }}"
+                   class="pl-12 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors {% if form.price.errors %}border-red-500{% endif %}"
+                   placeholder="0.00">
+          </div>
+          {% if form.price.errors %}
+            <div class="mt-2 text-sm text-red-600">
+              {% for error in form.price.errors %}
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Stock Quantity -->
+        <div class="form-group">
+          <label for="id_stock" class="block text-sm font-medium text-gray-700 mb-2">
+            Stock Quantity *
+            {% if form.stock.field.required %}<span class="text-red-500">*</span>{% endif %}
+          </label>
+          <input type="number" 
+                 name="stock" 
+                 id="id_stock" 
+                 min="0" 
+                 required
+                 value="{{ form.stock.value|default:'0' }}"
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors {% if form.stock.errors %}border-red-500{% endif %}"
+                 placeholder="Available quantity">
+          {% if form.stock.errors %}
+            <div class="mt-2 text-sm text-red-600">
+              {% for error in form.stock.errors %}
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Product Image -->
+        <div class="form-group">
+          <label for="id_image" class="block text-sm font-medium text-gray-700 mb-2">
+            Product Image
+            {% if form.image.field.required %}<span class="text-red-500">*</span>{% endif %}
+          </label>
+          <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg transition-colors hover:border-purple-400 {% if form.image.errors %}border-red-500{% endif %}" id="image-upload-area">
+            <div class="space-y-1 text-center">
+              <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <div class="flex text-sm text-gray-600 justify-center">
+                <label for="id_image" class="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none">
+                  <span>Upload a file</span>
+                  <input id="id_image" name="image" type="file" class="sr-only" accept="image/*">
+                </label>
+                <p class="pl-1">or drag and drop</p>
+              </div>
+              <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            </div>
+          </div>
+          <div id="image-preview" class="mt-4 hidden">
+            <p class="text-sm text-gray-700 mb-2">Image Preview:</p>
+            <img id="preview" class="max-h-48 rounded-lg shadow-sm border border-gray-200">
+          </div>
+          {% if form.image.errors %}
+            <div class="mt-2 text-sm text-red-600">
+              {% for error in form.image.errors %}
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="pt-6 flex justify-end space-x-4">
+      <a href="{}" 
+         class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold px-6 py-3 rounded-lg transition duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+        Cancel
+      </a>
+      <button type="submit" 
+              id="submitButton"
+              class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        <span id="submitText">Add Product</span>
+        <svg id="loadingSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Custom Styles -->
+<style>
+  /* Form input styling */
+  input, textarea, select {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Custom scrollbar for textarea */
+  textarea::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  textarea::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  textarea::-webkit-scrollbar-thumb {
+    background: #c4b5fd;
+    border-radius: 3px;
+  }
+  
+  textarea::-webkit-scrollbar-thumb:hover {
+    background: #a78bfa;
+  }
+  
+  /* File upload area styling */
+  #image-upload-area {
+    transition: all 0.3s ease;
+  }
+  
+  #image-upload-area.dragover {
+    border-color: #8b5cf6;
+    background-color: #faf5ff;
+  }
+  
+  /* Error states */
+  .border-red-500 {
+    border-color: #ef4444;
+  }
+  
+  .form-group:focus-within label {
+    color: #7c3aed;
+  }
+</style>
+
+<!-- JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('productForm');
+  const submitButton = document.getElementById('submitButton');
+  const submitText = document.getElementById('submitText');
+  const loadingSpinner = document.getElementById('loadingSpinner');
+  const nameField = document.getElementById('id_name');
+  const slugField = document.getElementById('id_slug');
+  
+  // Auto-generate slug from product name
+  if (nameField && slugField) {
+    nameField.addEventListener('input', function() {
+      if (!slugField.value || slugField.dataset.manual !== 'true') {
+        const slug = this.value
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/[\s_-]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        slugField.value = slug;
+      }
+    });
+    
+    // Track manual slug edits
+    slugField.addEventListener('input', function() {
+      if (this.value) {
+        this.dataset.manual = 'true';
+      } else {
+        delete this.dataset.manual;
+      }
+    });
+  }
+  
+  // Image preview functionality
+  const imageInput = document.getElementById('id_image');
+  const imagePreview = document.getElementById('image-preview');
+  const previewImage = document.getElementById('preview');
+  const uploadArea = document.getElementById('image-upload-area');
+  
+  if (imageInput) {
+    // Handle file selection
+    imageInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        
+        // Validate file size (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          alert('File size must be less than 10MB');
+          this.value = '';
+          return;
+        }
+        
+        // Validate file type
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+          alert('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+          this.value = '';
+          return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          previewImage.src = e.target.result;
+          imagePreview.classList.remove('hidden');
+        }
+        
+        reader.readAsDataURL(file);
+      } else {
+        imagePreview.classList.add('hidden');
+      }
+    });
+    
+    // Drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+      uploadArea.classList.add('dragover');
+    }
+    
+    function unhighlight() {
+      uploadArea.classList.remove('dragover');
+    }
+    
+    uploadArea.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length) {
+        imageInput.files = files;
+        const event = new Event('change', { bubbles: true });
+        imageInput.dispatchEvent(event);
+      }
+    }
+  }
+  
+  // Price formatting
+  const priceInput = document.getElementById('id_price');
+  if (priceInput) {
+    priceInput.addEventListener('blur', function() {
+      if (this.value) {
+        this.value = parseFloat(this.value).toFixed(2);
+      }
+    });
+  }
+  
+  // Auto-resize textarea
+  const descriptionTextarea = document.getElementById('id_description');
+  if (descriptionTextarea) {
+    descriptionTextarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+    
+    // Initial resize
+    setTimeout(() => {
+      descriptionTextarea.style.height = 'auto';
+      descriptionTextarea.style.height = (descriptionTextarea.scrollHeight) + 'px';
+    }, 100);
+  }
+  
+  // Form submission handling
+  form.addEventListener('submit', function(e) {
+    // Show loading state
+    submitButton.disabled = true;
+    submitText.textContent = 'Adding Product...';
+    loadingSpinner.classList.remove('hidden');
+    
+    // Let the form submit naturally - Django will handle validation
+    // If there are errors, the page will reload and show them
+  });
+  
+  // Real-time validation
+  const fields = form.querySelectorAll('input[required], select[required], textarea[required]');
+  fields.forEach(field => {
+    field.addEventListener('blur', function() {
+      validateField(this);
+    });
+  });
+  
+  function validateField(field) {
+    const value = field.value.trim();
+    const parent = field.closest('.form-group');
+    
+    if (!value && field.required) {
+      field.classList.add('border-red-500');
+    } else {
+      field.classList.remove('border-red-500');
+    }
+  }
+});
+</script>
+{% endblock %}

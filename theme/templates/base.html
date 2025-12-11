@@ -1,0 +1,266 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MyStore{% endblock title %}</title>
+    {% tailwind_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+    <style>
+        .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04); }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .text-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Sidebar transition */
+        .sidebar { transition: all 0.3s ease-in-out; }
+        .sidebar.collapsed { width: 80px; }
+        .sidebar.collapsed .sidebar-text { display: none; }
+        .sidebar.collapsed .logo-text { display: none; }
+        .sidebar.collapsed .search-full { display: none; }
+        .sidebar.collapsed .search-icon { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 flex min-h-screen font-sans text-gray-900">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-72 bg-white shadow-lg h-screen sticky top-0 p-6 flex flex-col justify-between transition-all duration-300">
+        <div>
+            <!-- Logo & Home with Hamburger -->
+            <div class="flex items-center justify-between mb-8">
+                <a href="/" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">M</span>
+                    </div>
+                    <span class="logo-text text-2xl font-bold text-gray-800">MyStore</span>
+                </a>
+                <!-- Hamburger Menu -->
+                <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
+            </div>
+
+            <!-- Search in Sidebar -->
+            <!-- <div class="mb-6">
+                <form action="/search/" method="GET" class="search-full">
+                    <div class="relative">
+                        <input type="text" name="q" placeholder="Search categories..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <button type="submit" class="absolute left-0 top-0 h-full px-3 text-gray-500 hover:text-purple-600">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form> -->
+                <!-- Search icon for collapsed sidebar -->
+                <!-- <div class="search-icon hidden text-center">
+                    <a href="/search/" class="p-3 rounded-lg hover:bg-gray-100 transition-colors block">
+                        <i class="fas fa-search text-gray-600 text-xl"></i>
+                    </a>
+                </div>
+            </div> -->
+
+            <!-- Home Link -->
+            <div class="mb-6">
+                <a href="{% url 'ecommerce:home' %}" class="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors duration-200 mb-2">
+                    <i class="fas fa-home w-6 text-center"></i>
+                    <span class="sidebar-text">Home</span>
+                </a>
+            </div>
+           <a href="{% url 'ecommerce:product_list' %}" 
+   class="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors duration-200 mb-2">
+    <i class="fas fa-home w-6 text-center"></i>
+    <span class="sidebar-text">All</span>
+</a>
+
+
+            <!-- Categories -->
+            <div>
+                <h3 class="font-semibold text-gray-700 mb-2">Categories</h3>
+<ul>
+  {% for category in categories %}
+    <li>
+      <a href="{% url 'ecommerce:category_detail' category.slug %}" 
+         class="text-gray-700 hover:text-purple-600 flex items-center space-x-2 mb-1">
+        <i class="fa fa-tag"></i> 
+        <span>{{ category.name }}</span>
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+
+                <a href="{% url 'ecommerce:add_category' %}" class="mt-2 flex items-center space-x-2 text-purple-600 font-semibold hover:underline">
+                    <i class="fas fa-plus w-6 text-center"></i>
+                    <span class="sidebar-text">Add Category</span>
+                </a>
+            </div>
+        </div>
+  
+        
+        <!-- Footer -->
+        <div class="mt-6 text-gray-400 text-sm sidebar-text">
+            &copy; {% now "Y" %} MyStore. All rights reserved.
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col">
+        <!-- Navbar -->
+        <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+            <div class="px-8 py-4 flex items-center justify-between">
+                <!-- Left side - Page title and breadcrumb -->
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">My Store</h1>
+                </div>
+
+                <!-- Right side - Navbar search and user menu -->
+                <div class="flex items-center space-x-6">
+                    <!-- Navbar Search -->
+                    <div class="relative">
+                        <form action="/search/" method="GET">
+                            <div class="relative">
+                                <input type="text" name="q" placeholder="Search products..." class="w-64 pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <button type="submit" class="absolute left-0 top-0 h-full px-3 text-gray-500 hover:text-purple-600">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- User Menu -->
+                    <div class="flex items-center space-x-4">
+ <div class="relative">
+        <a href="{% url 'account:register' %}" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center">
+                <span class="text-white font-bold text-sm">A</span>
+            </div>
+            <span class="text-gray-700">{{ user.username }}</span>
+            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+        </a>
+    </div>
+</div>
+
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2 rounded shadow-sm fade-in">
+                    <div class="flex items-center">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <p>{{ message }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block content %}
+            <!-- Hero Section -->
+            <section class="gradient-bg rounded-2xl shadow-xl text-white mb-12 p-8 fade-in">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-6 md:mb-0">
+                        <h1 class="text-4xl md:text-5xl font-bold mb-4">Welcome to MyStore</h1>
+                        <p class="text-xl mb-6 opacity-90">Manage your categories, products, and shop easily from this dashboard.</p>
+                    </div>
+                    <div class="md:w-1/2 flex justify-center">
+                        <i class="fas fa-store text-white text-8xl md:text-9xl"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Products (optional) -->
+            <section class="fade-in">
+                <h2 class="text-3xl font-bold mb-6">Featured Products</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {% for product in featured_products %}
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden hover-lift">
+                        <div class="h-48 bg-gray-200 flex items-center justify-center">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="object-cover h-full w-full">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-1">{{ product.name }}</h3>
+                            <p class="text-gray-600 text-sm mb-2">{{ product.description|truncatechars:50 }}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-gray-800">${{ product.price }}</span>
+                                <button class="bg-purple-600 text-white p-2 rounded-full hover:bg-purple-700 transition-colors">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endblock content %}
+        </main>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const toggleButton = document.getElementById('sidebar-toggle');
+            
+            // Toggle sidebar
+            toggleButton.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                
+                // Change hamburger icon
+                const icon = toggleButton.querySelector('i');
+                if (sidebar.classList.contains('collapsed')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-chevron-right');
+                } else {
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-bars');
+                }
+            });
+
+            // Modal functionality (keep your existing modal code)
+            const modal = document.getElementById('add-category-modal');
+            const addBtn = document.getElementById('add-category-btn');
+            const closeBtn = document.getElementById('close-modal');
+            const form = document.getElementById('add-category-form');
+            const categoryList = document.getElementById('category-list');
+
+            if (addBtn) addBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+            if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = form.name.value;
+
+                    fetch("{% url 'ecommerce:product_list' %}", {
+                        method: 'POST',
+                        headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: new URLSearchParams({'name': name})
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.success){
+                            const li = document.createElement('li');
+                            li.innerHTML = `<a href="/category/${data.slug}/" class="flex items-center space-x-2 p-2 rounded hover:bg-purple-100 hover:text-purple-700 transition-colors">
+                                <i class="fas fa-tag w-6 text-center text-sm"></i>
+                                <span class="sidebar-text">${data.name}</span>
+                            </a>`;
+                            categoryList.appendChild(li);
+                            form.reset();
+                            modal.classList.add('hidden');
+                        } else {
+                            alert("Error: " + JSON.stringify(data.errors));
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

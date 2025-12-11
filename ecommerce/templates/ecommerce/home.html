@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Welcome to MyStore{% endblock %}
+{% block content %}
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Hero Section -->
+    <section class="relative rounded-2xl overflow-hidden mb-16 fade-in">
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 z-10"></div>
+        <div class="h-[26rem] bg-gradient-to-r from-purple-600 to-indigo-700 flex items-center justify-center text-center relative">
+            <div class="relative z-20 text-white px-6 py-10">
+                <h1 class="text-5xl md:text-6xl font-extrabold mb-4">Biggest Sale of the Season!</h1>
+                <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto opacity-90">Grab exclusive discounts on your favorite products. Limited time only!</p>
+                <a href="/shop/" class="bg-white text-purple-700 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 shadow-lg transition-all transform hover:scale-105">
+                    Shop Now
+                </a>
+            </div>
+        </div>
+        <!-- Countdown Timer -->
+        <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 bg-white/20 backdrop-blur-lg px-6 py-3 rounded-full text-white font-semibold flex space-x-4" id="countdown">
+            <span id="days">00</span>d
+            <span id="hours">00</span>h
+            <span id="minutes">00</span>m
+            <span id="seconds">00</span>s
+        </div>
+    </section>
+
+    <!-- Upcoming Events / Sales -->
+    <section class="mb-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-800">🔥 Upcoming Events & Sales</h2>
+            <p class="text-gray-600 mt-2">Don’t miss out on our exclusive deals and events!</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-gradient-to-br from-orange-500 to-pink-500 text-white rounded-2xl p-8 shadow-lg">
+                <h3 class="text-2xl font-bold mb-3">🎉 Diwali Super Sale</h3>
+                <p class="mb-4 opacity-90">Up to 70% off on electronics and gadgets. Ends soon!</p>
+                <a href="/shop/" class="underline hover:text-yellow-200">Explore Offers</a>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl p-8 shadow-lg">
+                <h3 class="text-2xl font-bold mb-3">🛍️ Winter Fashion Week</h3>
+                <p class="mb-4 opacity-90">New arrivals and winter collections available now.</p>
+                <a href="/shop/" class="underline hover:text-blue-200">Shop Collection</a>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-500 to-teal-500 text-white rounded-2xl p-8 shadow-lg">
+                <h3 class="text-2xl font-bold mb-3">🎁 Black Friday Countdown</h3>
+                <p class="mb-4 opacity-90">Exclusive pre-sale discounts for loyal members.</p>
+                <a href="/register/" class="underline hover:text-green-200">Join Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+        <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-purple-500">
+            <div class="flex items-center">
+                <i class="fas fa-users text-purple-600 text-3xl mr-4"></i>
+                <div>
+                    <p class="text-3xl font-bold text-gray-800">{{ active_customers }}</p>
+                    <p class="text-gray-500 text-sm">Happy Customers</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-blue-500">
+            <div class="flex items-center">
+                <i class="fas fa-shipping-fast text-blue-600 text-3xl mr-4"></i>
+                <div>
+                    <p class="text-3xl font-bold text-gray-800">98%</p>
+                    <p class="text-gray-500 text-sm">On-Time Delivery</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-green-500">
+            <div class="flex items-center">
+                <i class="fas fa-star text-green-600 text-3xl mr-4"></i>
+                <div>
+                    <p class="text-3xl font-bold text-gray-800">4.9</p>
+                    <p class="text-gray-500 text-sm">Average Rating</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-pink-500">
+            <div class="flex items-center">
+                <i class="fas fa-globe text-pink-600 text-3xl mr-4"></i>
+                <div>
+                    <p class="text-3xl font-bold text-gray-800">25+</p>
+                    <p class="text-gray-500 text-sm">Countries Served</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Brands -->
+    <section class="mb-16 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">Our Trusted Brands</h2>
+        <div class="flex flex-wrap justify-center items-center gap-10 opacity-80">
+            <img src="#" class="h-12 grayscale hover:grayscale-0 transition" alt="Brand 1">
+            <img src="#" class="h-12 grayscale hover:grayscale-0 transition" alt="Brand 2">
+            <img src="#" class="h-12 grayscale hover:grayscale-0 transition" alt="Brand 3">
+            <img src="#" class="h-12 grayscale hover:grayscale-0 transition" alt="Brand 4">
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-2xl p-10 text-white mb-16 relative overflow-hidden">
+        <div class="relative z-10 max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-4">Stay in the Loop</h2>
+            <p class="text-purple-100 mb-8 text-lg">Get notified about upcoming sales, offers, and events directly in your inbox!</p>
+            
+            <form class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+                <input type="email" placeholder="Enter your email" 
+                       class="flex-1 px-5 py-4 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800">
+                <button type="submit" class="bg-white text-purple-600 font-semibold px-8 py-4 rounded-xl hover:bg-gray-100 transition-colors shadow-lg">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">What Our Shoppers Say</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for review in testimonials %}
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                        {{ review.initials }}
+                    </div>
+                    
+                </div>
+                <p class="text-gray-600 italic">"{{ review.comment }}"</p>
+            </div>
+            {% empty %}
+            <p class="text-center text-gray-600">No testimonials yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<style>
+.fade-in { animation: fadeIn 1s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Countdown Timer for Sale
+    const endDate = new Date("2025-12-31T23:59:59").getTime();
+    const timer = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = endDate - now;
+        if (distance <= 0) {
+            clearInterval(timer);
+            document.getElementById("countdown").innerHTML = "🎉 Sale Ended!";
+            return;
+        }
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        document.getElementById("days").innerText = days;
+        document.getElementById("hours").innerText = hours;
+        document.getElementById("minutes").innerText = minutes;
+        document.getElementById("seconds").innerText = seconds;
+    }, 1000);
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,914 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Buy Now{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --primary-light: #c7d2fe;
+    --secondary: #ec4899;
+    --secondary-dark: #db2777;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+    --shadow: 0 1px 3px 0 rgba(0,0,0,0.1),0 1px 2px 0 rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -2px rgba(0,0,0,0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: var(--gray-800);
+    background-color: var(--gray-50);
+}
+
+.product-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 768px) {
+    .product-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.product-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+.product-image-container {
+    width: 100%;
+    text-align: center;
+    background: var(--gray-100);
+    padding: 2rem;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.no-image {
+    color: var(--gray-500);
+    font-style: italic;
+    padding: 2rem;
+}
+
+.product-content {
+    padding: 1.5rem;
+}
+
+.product-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--gray-900);
+}
+
+.product-description {
+    color: var(--gray-600);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.quantity-section, .payment-section, .price-breakdown {
+    margin-bottom: 1.5rem;
+}
+
+.section-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--gray-700);
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--gray-300);
+    background: white;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.quantity-btn:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quantity-input {
+    width: 80px;
+    text-align: center;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-weight: 600;
+    transition: border-color 0.2s ease;
+}
+
+.quantity-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.quantity-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.payment-options {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.payment-option {
+    flex: 1;
+    min-width: 100px;
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 0.75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payment-option:hover {
+    border-color: var(--primary-light);
+    background: var(--gray-50);
+}
+
+.payment-option.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.payment-form {
+    display: none;
+    background: var(--gray-50);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.payment-form.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--gray-700);
+}
+
+.form-input {
+    width: 100%;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.price-breakdown {
+    background: var(--gray-50);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.price-row:last-child {
+    border-bottom: none;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--gray-900);
+}
+
+.confirm-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+    margin-top: 1rem;
+}
+
+.confirm-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.confirm-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+}
+
+.modal.active { 
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: var(--shadow-xl);
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--gray-900);
+}
+
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.modal-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.modal-btn-secondary {
+    background: var(--gray-200);
+    color: var(--gray-700);
+}
+
+.modal-btn-secondary:hover {
+    background: var(--gray-300);
+}
+
+.modal-btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.modal-btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.loading-spinner {
+    width: 20px; 
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin { 
+    to { transform: rotate(360deg); } 
+}
+
+.secure-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    color: var(--success);
+    font-size: 0.875rem;
+}
+
+.alert-message {
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--success);
+    color: var(--success);
+}
+
+.alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+}
+
+.feature-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.feature-icon {
+    color: var(--success);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="product-container">
+    <!-- Success/Error messages -->
+    {% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            <div class="alert-message {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    {% if message.tags == 'success' %}
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    {% else %}
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    {% endif %}
+                </svg>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="product-grid">
+        <!-- Product Image -->
+        <div class="product-card">
+            <div class="product-image-container">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                    <div class="no-image">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p>No Image Available</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="product-content">
+                <h1 class="product-title">{{ product.name }}</h1>
+                <p class="product-description">{{ product.description|default:"High-quality product with premium features and excellent customer support." }}</p>
+                
+                <!-- Product Features -->
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Premium Quality Materials</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Fast & Free Shipping</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>30-Day Money Back Guarantee</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>24/7 Customer Support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details + Form -->
+        <div class="product-card">
+            <div class="product-content">
+                <h2 class="product-title">Complete Your Purchase</h2>
+
+                <form method="POST" id="purchase-form">
+                    {% csrf_token %}
+                    
+                    <!-- Quantity -->
+                    <div class="quantity-section">
+                        <label class="section-label">Quantity</label>
+                        <div class="quantity-controls">
+                            <button type="button" id="decrease-quantity" class="quantity-btn">-</button>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.quantity }}" class="quantity-input">
+                            <button type="button" id="increase-quantity" class="quantity-btn">+</button>
+                        </div>
+                        <div class="quantity-info">
+                            <span>Available: {{ product.quantity }}</span>
+                            <span>Max: {{ product.quantity }} per order</span>
+                        </div>
+                    </div>
+
+                    <!-- Payment -->
+                    <div class="payment-section">
+                        <label class="section-label">Payment Method</label>
+                        <div class="payment-options">
+                            <div class="payment-option" data-value="Bank">
+                                🏦 Bank Transfer
+                            </div>
+                            <div class="payment-option" data-value="eSewa">
+                                📱 eSewa
+                            </div>
+                            <div class="payment-option" data-value="Khalti">
+                                💳 Khalti
+                            </div>
+                        </div>
+                        <select name="payment_method" id="payment-method-select" hidden required>
+                            <option value="">-- Select Payment --</option>
+                            <option value="Bank">Bank</option>
+                            <option value="eSewa">eSewa</option>
+                            <option value="Khalti">Khalti</option>
+                        </select>
+                        
+                        <!-- Bank Payment Form -->
+                        <div id="bank-form" class="payment-form">
+                            <h4>Bank Transfer Details</h4>
+                            <div class="form-group">
+                                <label class="form-label">Account Holder Name</label>
+                                <input type="text" name="account_holder" class="form-input" placeholder="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Account Number</label>
+                                <input type="text" name="account_number" class="form-input" placeholder="1234567890">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Bank Name</label>
+                                    <input type="text" name="bank_name" class="form-input" placeholder="Example Bank">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Branch</label>
+                                    <input type="text" name="branch" class="form-input" placeholder="Main Branch">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Transaction ID (After Payment)</label>
+                                <input type="text" name="transaction_id" class="form-input" placeholder="TRX123456789">
+                            </div>
+                        </div>
+                        
+                        <!-- eSewa Payment Form -->
+                        <div id="esewa-form" class="payment-form">
+                            <h4>eSewa Payment</h4>
+                            <div class="form-group">
+                                <label class="form-label">eSewa ID</label>
+                                <input type="text" name="esewa_id" class="form-input" placeholder="98XXXXXXXX">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mobile Number</label>
+                                <input type="text" name="esewa_mobile" class="form-input" placeholder="98XXXXXXXX">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Transaction ID</label>
+                                <input type="text" name="esewa_transaction_id" class="form-input" placeholder="ES123456789">
+                            </div>
+                            <p style="font-size: 0.875rem; color: var(--gray-600);">
+                                After completing payment in eSewa, enter the transaction ID above.
+                            </p>
+                        </div>
+                        
+                        <!-- Khalti Payment Form -->
+                        <div id="khalti-form" class="payment-form">
+                            <h4>Khalti Payment</h4>
+                            <div class="form-group">
+                                <label class="form-label">Khalti ID</label>
+                                <input type="text" name="khalti_id" class="form-input" placeholder="98XXXXXXXX">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mobile Number</label>
+                                <input type="text" name="khalti_mobile" class="form-input" placeholder="98XXXXXXXX">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Transaction ID</label>
+                                <input type="text" name="khalti_transaction_id" class="form-input" placeholder="KH123456789">
+                            </div>
+                            <p style="font-size: 0.875rem; color: var(--gray-600);">
+                                After completing payment in Khalti, enter the transaction ID above.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Price Breakdown -->
+                    <div class="price-breakdown">
+                        <div class="price-row">
+                            <span>Unit Price</span>
+                            <span>$<span id="unit-price">{{ product.price }}</span></span>
+                        </div>
+                        <div class="price-row">
+                            <span>Quantity</span>
+                            <span id="quantity-display">1</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Subtotal</span>
+                            <span>$<span id="subtotal-price">{{ product.price }}</span></span>
+                        </div>
+                        <div class="price-row">
+                            <span>Shipping</span>
+                            <span id="shipping-cost">$0.00</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Tax (10%)</span>
+                            <span id="tax-amount">$0.00</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Total Amount</span>
+                            <span>$<span id="total-price">{{ product.price }}</span></span>
+                        </div>
+                    </div>
+
+                    <button type="button" id="confirm-order-btn" class="confirm-btn">
+                        <span>Confirm Order</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    
+                    <div class="secure-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Secure Payment • SSL Encrypted</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal" id="confirmation-modal">
+    <div class="modal-content">
+        <h3 class="modal-title">Confirm Your Order</h3>
+        <div class="price-breakdown">
+            <div class="price-row">
+                <span>Product</span>
+                <span>{{ product.name }}</span>
+            </div>
+            <div class="price-row">
+                <span>Quantity</span>
+                <span id="modal-quantity">1</span>
+            </div>
+            <div class="price-row">
+                <span>Payment Method</span>
+                <span id="modal-payment">Bank</span>
+            </div>
+            <div class="price-row">
+                <span>Unit Price</span>
+                <span>$<span id="modal-unit-price">{{ product.price }}</span></span>
+            </div>
+            <div class="price-row">
+                <span>Subtotal</span>
+                <span>$<span id="modal-subtotal">{{ product.price }}</span></span>
+            </div>
+            <div class="price-row">
+                <span>Shipping</span>
+                <span id="modal-shipping">$0.00</span>
+            </div>
+            <div class="price-row">
+                <span>Tax</span>
+                <span id="modal-tax">$0.00</span>
+            </div>
+            <div class="price-row">
+                <span>Total Amount</span>
+                <span>$<span id="modal-total">{{ product.price }}</span></span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="modal-cancel" class="modal-btn modal-btn-secondary">Cancel</button>
+            <button id="modal-confirm" class="modal-btn modal-btn-primary">Confirm & Pay</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const quantityInput = document.getElementById('quantity');
+    const decreaseBtn = document.getElementById('decrease-quantity');
+    const increaseBtn = document.getElementById('increase-quantity');
+    const unitPrice = parseFloat(document.getElementById('unit-price').textContent);
+    const totalPriceElement = document.getElementById('total-price');
+    const subtotalPriceElement = document.getElementById('subtotal-price');
+    const quantityDisplay = document.getElementById('quantity-display');
+    const shippingCostElement = document.getElementById('shipping-cost');
+    const taxAmountElement = document.getElementById('tax-amount');
+    const maxQuantity = parseInt('{{ product.quantity }}');
+    
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    const paymentSelect = document.getElementById('payment-method-select');
+    const bankForm = document.getElementById('bank-form');
+    const esewaForm = document.getElementById('esewa-form');
+    const khaltiForm = document.getElementById('khalti-form');
+    
+    const confirmOrderBtn = document.getElementById('confirm-order-btn');
+    const modal = document.getElementById('confirmation-modal');
+    const modalCancel = document.getElementById('modal-cancel');
+    const modalConfirm = document.getElementById('modal-confirm');
+    const modalQuantity = document.getElementById('modal-quantity');
+    const modalPayment = document.getElementById('modal-payment');
+    const modalUnitPrice = document.getElementById('modal-unit-price');
+    const modalSubtotal = document.getElementById('modal-subtotal');
+    const modalShipping = document.getElementById('modal-shipping');
+    const modalTax = document.getElementById('modal-tax');
+    const modalTotal = document.getElementById('modal-total');
+    
+    // Calculate total price with shipping and tax
+    function updateTotalPrice() {
+        const quantity = parseInt(quantityInput.value);
+        const subtotal = unitPrice * quantity;
+        const shipping = quantity > 2 ? 0 : 5.99; // Free shipping for 3+ items
+        const tax = subtotal * 0.10; // 10% tax
+        const total = subtotal + shipping + tax;
+        
+        // Update display
+        totalPriceElement.textContent = total.toFixed(2);
+        subtotalPriceElement.textContent = subtotal.toFixed(2);
+        shippingCostElement.textContent = `$${shipping.toFixed(2)}`;
+        taxAmountElement.textContent = `$${tax.toFixed(2)}`;
+        quantityDisplay.textContent = quantity;
+        
+        // Update modal values
+        modalQuantity.textContent = quantity;
+        modalUnitPrice.textContent = unitPrice.toFixed(2);
+        modalSubtotal.textContent = subtotal.toFixed(2);
+        modalShipping.textContent = `$${shipping.toFixed(2)}`;
+        modalTax.textContent = `$${tax.toFixed(2)}`;
+        modalTotal.textContent = total.toFixed(2);
+        
+        // Update button state based on stock
+        if (quantity > maxQuantity) {
+            confirmOrderBtn.disabled = true;
+            confirmOrderBtn.textContent = 'Out of Stock';
+        } else {
+            confirmOrderBtn.disabled = false;
+            confirmOrderBtn.innerHTML = '<span>Confirm Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>';
+        }
+        
+        // Update decrease button state
+        decreaseBtn.disabled = quantity <= 1;
+        
+        // Update increase button state
+        increaseBtn.disabled = quantity >= maxQuantity;
+    }
+    
+    // Quantity controls
+    decreaseBtn.addEventListener('click', function() {
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+            updateTotalPrice();
+        }
+    });
+    
+    increaseBtn.addEventListener('click', function() {
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue < maxQuantity) {
+            quantityInput.value = currentValue + 1;
+            updateTotalPrice();
+        }
+    });
+    
+    quantityInput.addEventListener('change', function() {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        } else if (value > maxQuantity) {
+            this.value = maxQuantity;
+        }
+        updateTotalPrice();
+    });
+    
+    // Payment method selection
+    function showPaymentForm(paymentMethod) {
+        // Hide all payment forms
+        bankForm.classList.remove('active');
+        esewaForm.classList.remove('active');
+        khaltiForm.classList.remove('active');
+        
+        // Show selected payment form
+        if (paymentMethod === 'Bank') {
+            bankForm.classList.add('active');
+        } else if (paymentMethod === 'eSewa') {
+            esewaForm.classList.add('active');
+        } else if (paymentMethod === 'Khalti') {
+            khaltiForm.classList.add('active');
+        }
+    }
+    
+    paymentOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Remove selected class from all options
+            paymentOptions.forEach(o => o.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            this.classList.add('selected');
+            
+            // Update the hidden select element
+            const value = this.dataset.value;
+            paymentSelect.value = value;
+            
+            // Update modal
+            modalPayment.textContent = value;
+            
+            // Show corresponding payment form
+            showPaymentForm(value);
+        });
+    });
+    
+    // Modal controls
+    confirmOrderBtn.addEventListener('click', function() {
+        const selectedPayment = paymentSelect.value;
+        if (!selectedPayment) {
+            alert('Please select a payment method');
+            return;
+        }
+        
+        // Validate payment form based on selected method
+        let isValid = true;
+        if (selectedPayment === 'Bank') {
+            const accountHolder = document.querySelector('input[name="account_holder"]').value;
+            const accountNumber = document.querySelector('input[name="account_number"]').value;
+            if (!accountHolder || !accountNumber) {
+                alert('Please fill in all required bank details');
+                isValid = false;
+            }
+        } else if (selectedPayment === 'eSewa') {
+            const esewaId = document.querySelector('input[name="esewa_id"]').value;
+            if (!esewaId) {
+                alert('Please enter your eSewa ID');
+                isValid = false;
+            }
+        } else if (selectedPayment === 'Khalti') {
+            const khaltiId = document.querySelector('input[name="khalti_id"]').value;
+            if (!khaltiId) {
+                alert('Please enter your Khalti ID');
+                isValid = false;
+            }
+        }
+        
+        if (isValid) {
+            modal.classList.add('active');
+        }
+    });
+    
+    modalCancel.addEventListener('click', function() {
+        modal.classList.remove('active');
+    });
+    
+    modalConfirm.addEventListener('click', function() {
+        // Show loading state
+        const submitBtn = this;
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<div class="loading-spinner"></div> Processing...';
+        
+        // Simulate processing delay
+        setTimeout(function() {
+            // Submit the form
+            document.getElementById('purchase-form').submit();
+        }, 2000);
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+    
+    // Initialize
+    updateTotalPrice();
+    
+    // Select first payment option by default
+    if (paymentOptions.length > 0) {
+        paymentOptions[0].click();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — My Shop{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 bg-gray-50 rounded-lg shadow">
+  <!-- Product Image -->
+  <div>
+    {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-auto rounded-lg shadow-md">
+    {% else %}
+      <div class="w-full h-64 flex items-center justify-center bg-gray-200 text-gray-500 rounded-md">
+        No Image Available
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Product Details -->
+  <div>
+    <h1 class="text-3xl font-bold text-gray-800">{{ product.name }}</h1>
+    <p class="text-gray-600 mt-4 leading-relaxed">{{ product.description|linebreaks }}</p>
+    <p class="text-2xl font-semibold text-indigo-600 mt-4">Rs {{ product.price }}</p>
+
+    <!-- FIXED: More robust stock check -->
+    {% with stock=product.stock|default:0 %}
+
+        <div class="flex flex-wrap items-center space-x-4 mt-6">
+          <p class="text-sm text-gray-500 whitespace-nowrap">Stock: {{ stock }}</p>
+
+          <form action="{% url 'cart:cart_add' product.id %}" method="post" class="flex items-center space-x-3">
+            {% csrf_token %}
+
+            <!-- Quantity Selector -->
+            <div class="flex items-center border border-gray-300 rounded-md">
+              <button type="button" class="decrease-quantity px-3 py-2 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-minus text-xs"></i>
+              </button>
+              <input 
+                type="number" 
+                name="quantity" 
+                value="1" 
+                min="1" 
+                max="{{ stock }}" 
+                class="quantity-input w-12 text-center border-0 focus:ring-0"
+                required
+              >
+              <button type="button" class="increase-quantity px-3 py-2 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-plus text-xs"></i>
+              </button>
+            </div>
+
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition">
+              Add to Cart
+            </button>
+          </form>
+
+          <a href="{% url 'buynow:buy_now' %}" class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition">
+            Buy Now
+          </a>
+        </div>
+      {% if stock > 0 %}
+        <div class="mt-6">
+          <button class="px-6 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed" disabled>
+            Out of Stock
+          </button>
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const decreaseBtn = document.querySelector('.decrease-quantity');
+  const increaseBtn = document.querySelector('.increase-quantity');
+  const quantityInput = document.querySelector('.quantity-input');
+
+  if (decreaseBtn && increaseBtn && quantityInput) {
+    decreaseBtn.addEventListener('click', function() {
+      let currentValue = parseInt(quantityInput.value) || 1;
+      if (currentValue > 1) quantityInput.value = currentValue - 1;
+    });
+
+    increaseBtn.addEventListener('click', function() {
+      let currentValue = parseInt(quantityInput.value) || 1;
+      const maxStock = parseInt(quantityInput.max);
+      if (currentValue < maxStock) quantityInput.value = currentValue + 1;
+    });
+  }
+});
+</script>
+{% endblock %}

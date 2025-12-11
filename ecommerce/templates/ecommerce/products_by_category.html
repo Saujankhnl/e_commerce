@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category.name }} - Products - My Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .transition {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-purple-700 text-white py-6 shadow-md">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <h1 class="text-3xl font-bold">My Shop</h1>
+            <nav class="flex items-center space-x-6">
+                <a href="{% url 'ecommerce:category_list' %}" class="text-white hover:text-gray-200 transition flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Categories
+                </a>
+                <a href="{% url 'ecommerce:add_product' %}" class="bg-purple-600 hover:bg-purple-800 text-white px-4 py-2 rounded-md transition flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Add Product
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Category Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ category.name }}</h1>
+            {% if category.description %}
+                <p class="text-gray-600 text-lg">{{ category.description }}</p>
+            {% endif %}
+        </div>
+
+        {% if products %}
+        <!-- Product Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+            {% for product in products %}
+            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden">
+                <a href="{% url 'ecommerce:product_detail' product.slug %}" class="block">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                         class="w-full h-48 object-cover rounded-t-xl hover:opacity-90 transition">
+                    {% else %}
+                    <div class="w-full h-48 bg-gray-200 rounded-t-xl flex items-center justify-center">
+                        <img src="{% static 'images/no-image.png' %}" alt="No Image" class="h-32 w-32 object-contain opacity-50">
+                    </div>
+                    {% endif %}
+                </a>
+                
+                <div class="p-5">
+                    <a href="{% url 'ecommerce:product_detail' product.slug %}">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2 hover:text-purple-600 transition">
+                            {{ product.name }}
+                        </h3>
+                    </a>
+                    
+                    {% if product.description %}
+                    <p class="text-gray-600 mb-3 text-sm line-clamp-2">{{ product.description }}</p>
+                    {% endif %}
+                    
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-purple-700 font-bold text-xl">Rs {{ product.price }}</p>
+                        {% if product.is_in_stock %}
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                                In Stock
+                            </span>
+                        {% else %}
+                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">
+                                Out of Stock
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <a href="{% url 'ecommerce:product_detail' product.slug %}" 
+                       class="block w-full bg-purple-600 hover:bg-purple-700 text-white text-center py-2 rounded-lg transition font-medium">
+                        View Details
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Add Product Button -->
+        <div class="text-center mt-12">
+            <a href="{% url 'ecommerce:add_product' %}"
+               class="inline-flex items-center bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition transform hover:scale-105 shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add New Product
+            </a>
+        </div>
+
+        {% else %}
+        <!-- No Products Section -->
+        <div class="bg-white rounded-2xl shadow-sm p-12 text-center max-w-2xl mx-auto">
+            <div class="mb-6">
+                <svg class="w-24 h-24 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-700 mb-4">No Products Found</h3>
+            <p class="text-gray-500 mb-8 text-lg">There are no products available in this category yet.</p>
+            <a href="{% url 'ecommerce:add_product' %}"
+               class="inline-flex items-center bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition transform hover:scale-105">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add First Product
+            </a>
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 My Shop. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

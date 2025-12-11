@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Ecommerce</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://kit.fontawesome.com/a2e0b2f3a5.js" crossorigin="anonymous"></script>
+  <style>
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up {
+      animation: fade-in-up 0.6s ease-out forwards;
+    }
+    .chart-container {
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .chart-container:hover {
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-sans transition-all duration-300">
+
+  <!-- Navbar -->
+  <nav class="bg-purple-700 text-white p-4 flex justify-between items-center shadow-md">
+    <h1 class="text-2xl font-bold tracking-wide">Ecommerce Admin Dashboard</h1>
+    <div class="flex items-center space-x-4">
+      <a href="{% url 'ecommerce:home' %}" class="bg-white text-purple-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition">🏠 Store Front</a>
+      <a href="" class="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-white w-64 p-4 border-r hidden md:block">
+      <h2 class="text-lg font-semibold mb-4 text-purple-700">Ecommerce Navigation</h2>
+      <ul class="space-y-3">
+        <li><a href="{% url 'ecommerce:product_list' %}" class="block text-gray-700 hover:text-purple-700 font-medium transition"><i class="fas fa-cube mr-2"></i>All Products</a></li>
+        <li><a href="{% url 'ecommerce:category_list' %}" class="block text-gray-700 hover:text-purple-700 font-medium transition"><i class="fas fa-tags mr-2"></i>Category List</a></li>
+        <li><a href="{% url 'ecommerce:add_category' %}" class="block text-gray-700 hover:text-purple-700 font-medium transition"><i class="fas fa-plus-circle mr-2"></i>Add Category</a></li>
+        <li><a href="#" class="block text-gray-700 hover:text-purple-700 font-medium transition"><i class="fas fa-chart-line mr-2"></i>Sales Report</a></li>
+        <li><a href="#" class="block text-gray-700 hover:text-purple-700 font-medium transition"><i class="fas fa-users mr-2"></i>Customers</a></li>
+      </ul>
+
+      <!-- Quick Stats -->
+      <div class="mt-8 p-4 bg-purple-50 rounded-lg shadow-sm">
+        <h3 class="font-semibold text-purple-700 mb-2">Quick Stats</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between"><span>Products:</span><span class="font-semibold">{{ products.count }}</span></div>
+          <div class="flex justify-between"><span>Categories:</span><span class="font-semibold">{{ categories.count }}</span></div>
+          <div class="flex justify-between"><span>Available:</span><span class="font-semibold text-green-600">{{ available_products }}</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Dashboard Content -->
+    <main class="flex-1 p-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div>
+          <h2 class="text-3xl font-semibold text-gray-800">Ecommerce Overview</h2>
+          <p class="text-gray-600 mt-1">Manage your online store efficiently</p>
+        </div>
+        <div class="flex gap-4">
+          <input type="text" id="searchBox" placeholder="Search products..." class="border border-gray-300 rounded-lg p-2 w-60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition">
+          <a href="{% url 'ecommerce:add_category' %}" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition flex items-center">
+            <i class="fas fa-plus mr-2"></i> Add Category
+          </a>
+        </div>
+      </div>
+
+      <!-- Sales Summary -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white shadow-md p-6 rounded-lg border-l-4 border-purple-500 hover:scale-105 transition transform duration-300 animate-fade-in-up">
+          <h3 class="text-gray-700 font-semibold text-lg">Total Sales</h3>
+          <p class="text-3xl font-bold text-purple-700 mt-2">${{ total_sales|default:"0.00" }}</p>
+        </div>
+        <div class="bg-white shadow-md p-6 rounded-lg border-l-4 border-green-500 hover:scale-105 transition transform duration-300 animate-fade-in-up">
+          <h3 class="text-gray-700 font-semibold text-lg">Items Sold</h3>
+          <p class="text-3xl font-bold text-green-600 mt-2">{{ total_items_sold|default:"0" }}</p>
+        </div>
+        <div class="bg-white shadow-md p-6 rounded-lg border-l-4 border-blue-500 hover:scale-105 transition transform duration-300 animate-fade-in-up">
+          <h3 class="text-gray-700 font-semibold text-lg">Categories</h3>
+          <p class="text-3xl font-bold text-blue-600 mt-2">{{ total_categories }}</p>
+        </div>
+        <div class="bg-white shadow-md p-6 rounded-lg border-l-4 border-orange-500 hover:scale-105 transition transform duration-300 animate-fade-in-up">
+          <h3 class="text-gray-700 font-semibold text-lg">Total Products</h3>
+          <p class="text-3xl font-bold text-orange-600 mt-2">{{ products.count }}</p>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Sales Chart -->
+        <div class="bg-white p-6 rounded-lg shadow-md chart-container">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-chart-line mr-2 text-purple-500"></i> Sales Revenue (Monthly)
+          </h3>
+          <canvas id="salesChart" height="200"></canvas>
+        </div>
+
+        <!-- Dynamic Category Chart -->
+        <div class="bg-white p-6 rounded-lg shadow-md chart-container">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+              <i class="fas fa-chart-pie mr-2 text-green-500"></i> Products by Category
+            </h3>
+            <button id="refreshChart" class="text-sm bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-lg transition">
+              <i class="fas fa-sync-alt mr-1"></i> Refresh
+            </button>
+          </div>
+          <canvas id="categoryChart" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- Product Table -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+          <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+            <i class="fas fa-list mr-2 text-purple-500"></i>Recent Products
+          </h3>
+          <span class="text-sm text-gray-500">{{ products.count }} products total</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse" id="productTable">
+            <thead class="bg-gray-200 text-gray-700">
+              <tr>
+                <th class="p-3 font-semibold">Product Name</th>
+                <th class="p-3 font-semibold">Category</th>
+                <th class="p-3 font-semibold">Price</th>
+                <th class="p-3 font-semibold">Stock</th>
+                <th class="p-3 font-semibold">Status</th>
+                <th class="p-3 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+              <tr class="border-b hover:bg-gray-50 transition-colors">
+                <td class="p-3 font-medium">{{ product.name }}</td>
+                <td class="p-3" data-category="{{ product.category.name|default:'Uncategorized' }}">
+                  <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-semibold">
+                    {{ product.category.name|default:"Uncategorized" }}
+                  </span>
+                </td>
+                <td class="p-3 font-semibold text-gray-800">${{ product.price }}</td>
+                <td class="p-3">
+                  <span class="{% if product.stock <= 10 %}text-red-600 font-semibold animate-pulse{% else %}text-green-600{% endif %}">
+                    {{ product.stock|default:"0" }}
+                  </span>
+                </td>
+                <td class="p-3">
+                  {% if product.available %}
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">Available</span>
+                  {% else %}
+                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-semibold">Out of Stock</span>
+                  {% endif %}
+                </td>
+                <td class="p-3 space-x-2">
+                  <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">Edit</a>
+                  <a href="#" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition">Delete</a>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6" class="p-4 text-center text-gray-500">No products found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-4 mt-10 text-gray-500 text-sm bg-white border-t">
+    © <span id="currentYear">{{ year }}</span> Ecommerce Admin Dashboard | Powered by Django
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // --- Search Filter ---
+    document.getElementById('searchBox').addEventListener('input', function() {
+      const filter = this.value.toLowerCase();
+      const rows = document.querySelectorAll('#productTable tbody tr');
+      let visibleCount = 0;
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const isVisible = text.includes(filter);
+        row.style.display = isVisible ? '' : 'none';
+        if (isVisible) visibleCount++;
+      });
+    });
+
+    // --- Sales Chart ---
+    const salesCtx = document.getElementById('salesChart');
+    new Chart(salesCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        datasets: [{
+          label: 'Sales Revenue ($)',
+          data: [1200, 1900, 3000, 5000, 2300, 4000, 4500, 5200, 4800, 6100, 5800, 7000],
+          borderColor: '#7c3aed',
+          backgroundColor: 'rgba(124, 58, 237, 0.1)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 3
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'top' } } }
+    });
+
+    // --- Dynamic Category Chart ---
+    let categoryChart;
+    function generateCategoryChart() {
+      const rows = document.querySelectorAll('#productTable tbody tr');
+      const categoryCounts = {};
+      rows.forEach(row => {
+        if (row.style.display === 'none') return; // skip hidden rows
+        const categoryCell = row.querySelector('td[data-category]');
+        if (categoryCell) {
+          const category = categoryCell.dataset.category.trim();
+          if (category) categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+        }
+      });
+
+      const labels = Object.keys(categoryCounts);
+      const data = Object.values(categoryCounts);
+      const bgColors = labels.map(() => `hsl(${Math.random() * 360}, 70%, 70%)`);
+
+      const ctx = document.getElementById('categoryChart').getContext('2d');
+      if (categoryChart) categoryChart.destroy();
+      categoryChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: bgColors,
+            borderColor: '#fff',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { callbacks: { label: c => `${c.label}: ${c.raw}` } }
+          },
+          animation: { animateScale: true, animateRotate: true }
+        }
+      });
+    }
+
+    generateCategoryChart();
+    document.getElementById('refreshChart').addEventListener('click', generateCategoryChart);
+  </script>
+</body>
+</html>
