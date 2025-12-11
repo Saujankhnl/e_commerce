@@ -143,7 +143,7 @@ TAILWIND_APP_NAME = 'theme'
 
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 MEDIA_URL = '/media/'
