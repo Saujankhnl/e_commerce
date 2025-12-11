@@ -59,8 +59,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ecommerce_project.urls'
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATES = [
     {
@@ -73,11 +71,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                
+                'cart.context_processors.cart_item_count',  # ✅ added
+                'shop.context_processors.categories_context',
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
@@ -144,25 +144,11 @@ TAILWIND_APP_NAME = 'theme'
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 
-
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-APP_DIRS = True
+
 CART_SESSION_ID = 'cart'
 
-OPTIONS= {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'cart.context_processors.cart_item_count',  # ✅ added
-                'shop.context_processors.categories_context',
-                'account.middleware.AdminRememberMeMiddleware',
-                'ecommerce.context_processors.categories_context',
-            ],
-}
 
 DEFAULT_FROM_EMAIL = 'your_email@gmail.com'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
