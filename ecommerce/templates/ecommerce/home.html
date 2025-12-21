@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Welcome to MyStore{% endblock %}
 {% block content %}
 
@@ -96,10 +97,10 @@
     <section class="mb-16 text-center">
         <h2 class="text-3xl font-bold text-gray-800 mb-8">Our Trusted Brands</h2>
         <div class="flex flex-wrap justify-center items-center gap-10 opacity-80">
-            <img src="#" class="h-12 grayscale hover:grayscale-0 transition" alt="Brand 1">
-            <img src="#" class="h-12 grayscale hover:grayscale-0 transition" alt="Brand 2">
-            <img src="#" class="h-12 grayscale hover:grayscale-0 transition" alt="Brand 3">
-            <img src="#" class="h-12 grayscale hover:grayscale-0 transition" alt="Brand 4">
+            <img src="{% static 'images/amazon.png' %}" class="h-12 grayscale hover:grayscale-0 transition" alt="amazon">
+            <img src="{% static 'images/flipkart.jpg' %}" class="h-12 grayscale hover:grayscale-0 transition" alt="flipkart">
+            <img src="{% static 'images/daraz.png' %}" class="h-12 grayscale hover:grayscale-0 transition" alt="daraz">
+            <img src="{% static 'images/google.png' %}" class="h-12 grayscale hover:grayscale-0 transition" alt="google">
         </div>
     </section>
 

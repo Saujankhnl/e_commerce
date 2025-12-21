@@ -71,8 +71,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cart.context_processors.cart_item_count',  # ✅ added
-                'shop.context_processors.categories_context',
+                # 'cart.context_processors.cart_item_count',  # ✅ added
+                # 'shop.context_processors.categories_context',
             ],
         },
     },
@@ -127,9 +127,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
-# STATICFILES_DIRS = [ BASE_DIR / "static" ]   # optional for dev
+STATICFILES_DIRS = [ BASE_DIR / "static" ]
+   # optional for dev
+
+# STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media'
