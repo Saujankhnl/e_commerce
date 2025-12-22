@@ -3405,7 +3405,7 @@
     --page-scroll-transition-on: background-color 0.3s ease-out;
     transition: var(--page-scroll-transition);
     scrollbar-gutter: var(--page-scroll-gutter, unset);
-    scrollbar-gutter: if(style(--page-has-scroll: 1): var(--page-scroll-gutter, unset) ; else: unset);
+    scrollbar-gutter: if(style(--page-has-scroll, 1)) var(--page-scroll-gutter, unset) ; else: unset;
   }
   :root:root {
     background: var(--page-scroll-bg, var(--root-bg, var(--color-base-100)));
@@ -3415,7 +3415,6 @@
       --page-has-scroll: 1;
     }
   }
-}
 @layer base {
   :root, [data-theme] {
     background-color: var(--root-bg, var(--color-base-100));
@@ -3844,4 +3843,5 @@
       --tw-scale-z: 1;
     }
   }
+}
 }
