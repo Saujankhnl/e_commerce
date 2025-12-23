@@ -4,7 +4,9 @@ from . import views
 app_name = "ecommerce"
 
 urlpatterns = [
-    path("", views.home, name="home"),
+    path("", views.register, name="register"),
+
+    path("home/", views.home, name="home"),
     
     # Category list page
     path("category_list/", views.category_list, name="category_list"),

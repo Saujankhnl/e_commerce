@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | E-Commerce</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-box {
+            background: #fff;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background: #6366f1;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #4f46e5;
+        }
+
+        .login-link {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .login-link a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-box">
+    <h2>Create Account</h2>
+
+    <!-- Updated form: submits to the Django register view -->
+    <form method="POST" onsubmit="return validateForm()">
+        {% csrf_token %}
+
+        <label>Username</label>
+        <input type="text" name="username" id="username" required>
+
+        <label>Email</label>
+        <input type="email" name="email" id="email" required>
+
+        <label>Password</label>
+        <input type="password" name="password1" id="password1" required>
+
+        <label>Confirm Password</label>
+        <input type="password" name="password2" id="password2" required>
+
+        <div id="error-msg" class="error">
+            {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Keep as button to submit form and handle registration -->
+        <button type="submit" class="btn">Register</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account?
+        <a href="{% url 'ecommerce:home' %}">Login</a>
+    </div>
+</div>
+
+<script>
+    function validateForm() {
+        const p1 = document.getElementById("password1").value;
+        const p2 = document.getElementById("password2").value;
+        const error = document.getElementById("error-msg");
+
+        if (p1 !== p2) {
+            error.innerText = "Passwords do not match!";
+            return false;
+        }
+
+        if (p1.length < 8) {
+            error.innerText = "Password must be at least 8 characters";
+            return false;
+        }
+
+        error.innerText = "";
+        return true;
+    }
+</script>
+
+</body>
+</html>

@@ -6,9 +6,6 @@ from django.db.models import Sum
 import datetime
 from shop.models import Product, Category, Sale
 
-def register(request):
-    return render(request, 'account/register.html')
-
 def is_admin(user):
     """Check if user is staff/admin"""
     return user.is_staff
@@ -31,10 +28,10 @@ def admin_login(request):
         
         if not username or not password:
             messages.error(request, 'Please provide both username and password.')
-            return redirect('account:admin_login')
+            return redirect('account:register')
         
         user = authenticate(request, username=username, password=password)
-        
+        print(user, user.is_staff)
         if user is not None and user.is_staff:
             login(request, user)
             
@@ -55,10 +52,10 @@ def admin_login(request):
             messages.error(request, 'Invalid credentials or not an admin user.')
             return redirect('account:admin_login')
     
-    return render(request, 'account/admin_login.html')
+    return render(request, 'account/register.html')
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required(login_url='account:register')
+@user_passes_test(is_admin)
 def admin_page(request):
     """Admin dashboard page - requires admin authentication"""
     # Get dashboard statistics

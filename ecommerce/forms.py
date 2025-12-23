@@ -2,6 +2,14 @@
 from django import forms
 from .models import Category 
 from .models import Product # Import from current app
+from django.contrib.auth.forms import UserCreationForm
+from .models import CustomUser
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'password1')
+
 
 class CategoryForm(forms.ModelForm):
     class Meta:

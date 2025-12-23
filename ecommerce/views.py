@@ -6,6 +6,19 @@ from ecommerce.models import Category  # ✅ correct model
 from .models import Product
 from django.contrib import messages
 from .forms import ProductForm
+from .forms import CustomUserCreationForm
+
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('ecommerce:home')
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'ecommerce/register.html', {'form': form})
+
 
 def home(request):
     """
