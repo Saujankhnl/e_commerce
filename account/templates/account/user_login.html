@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            background: #ffffff;
+            width: 350px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            display: block;
+            text-align: center;
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <h2>User Login</h2>
+
+    <div class="error" id="error-msg"></div>
+
+    <label>Username</label>
+    <input type="text" id="username" placeholder="Enter username">
+
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Enter password">
+
+    <!-- Anchor controlled by JS -->
+    <a href="#" class="btn" onclick="loginUser()">Login</a>
+
+    <div class="register-link">
+        Don't have an account?
+        <a href="{% url 'ecommerce:register' %}">Create Account</a>
+    </div>
+</div>
+
+<script>
+    // Autofill from localStorage
+    window.onload = function () {
+        document.getElementById("username").value =
+            localStorage.getItem("reg_username") || "";
+        document.getElementById("password").value =
+            localStorage.getItem("reg_password") || "";
+    };
+
+    function loginUser() {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const errorMsg = document.getElementById("error-msg");
+
+        if (username === "" || password === "") {
+            errorMsg.innerText = "Both fields are required!";
+            return;
+        }
+
+        // Redirect only if validation passes
+        window.location.href = "{% url 'ecommerce:home' %}";
+    }
+</script>
+
+</body>
+</html>

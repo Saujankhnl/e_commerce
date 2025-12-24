@@ -89,11 +89,9 @@
     </style>
 </head>
 <body>
-
 <div class="register-box">
     <h2>Create Account</h2>
 
-    <!-- Updated form: submits to the Django register view -->
     <form method="POST" onsubmit="return validateForm()">
         {% csrf_token %}
 
@@ -122,13 +120,15 @@
             {% endif %}
         </div>
 
-        <!-- Keep as button to submit form and handle registration -->
-        <button type="submit" class="btn">Register</button>
+        <!-- Anchor tag acting like submit button -->
+        <a href="{% url 'account:user_login' %}" class="btn">
+            Register
+        </a>
     </form>
 
     <div class="login-link">
         Already have an account?
-        <a href="{% url 'ecommerce:home' %}">Login</a>
+        <a href="{% url 'account:user_login' %}">Login</a>
     </div>
 </div>
 
@@ -151,6 +151,21 @@
         error.innerText = "";
         return true;
     }
+    function registerUser() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password1").value.trim();
+
+    if (username === "" || password === "") {
+        alert("All fields required");
+        return;
+    }
+
+    // Save for login page
+    localStorage.setItem("reg_username", username);
+    localStorage.setItem("reg_password", password);
+
+    window.location.href = "{% url 'ecommerce:login' %}";
+}
 </script>
 
 </body>

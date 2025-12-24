@@ -6,6 +6,9 @@ from django.db.models import Sum
 import datetime
 from shop.models import Product, Category, Sale
 
+def user_login(request):
+    return render(request, 'account/user_login.html')
+
 def is_admin(user):
     """Check if user is staff/admin"""
     return user.is_staff
