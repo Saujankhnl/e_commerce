@@ -1,143 +1,177 @@
-{% load static  %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MyStore{% endblock title %}</title>
-
-    {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    {% block extra_css %}
     {% endblock %}
 </head>
 
 <body class="bg-gray-50 flex min-h-screen font-sans text-gray-900">
 
-<!-- Sidebar -->
-<aside id="sidebar" class="sidebar w-72 bg-white shadow-lg h-screen sticky top-0 p-6 flex flex-col justify-between transition-all duration-300">
+    {% if messages %}
+    <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-2">
+        {% for message in messages %}
+        <div class="bg-white shadow-lg rounded px-4 py-2" role="alert" data-autohide="true" data-delay="5000">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-600">{{ message }}</div>
+                <button type="button" class="btn-close-box" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(() => {
+            const toasts = document.querySelectorAll('.alert');
+            toasts.forEach(toast => {
+                toast.remove();
+            });
+        }, 5000);
+    </script>
+    {% endif %}
 
-    <div>
-        <!-- Logo -->
-        <div class="flex items-center justify-between mb-8">
-            <a href="/" class="flex items-center space-x-2">
-                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
-                    <span class="text-white font-bold text-xl">M</span>
-                </div>
-                <span class="logo-text text-2xl font-bold text-gray-800">MyStore</span>
+    {% block sidebar %}
+    <!-- Sidebar -->
+    <aside id="sidebar"
+        class="sidebar w-72 bg-white shadow-lg h-screen sticky top-0 p-6 flex flex-col justify-between transition-all duration-300">
+
+        <div>
+            <!-- Logo -->
+            <div class="flex items-center justify-between mb-8">
+                <a href="/" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">M</span>
+                    </div>
+                    <span class="logo-text text-2xl font-bold text-gray-800">MyStore</span>
+                </a>
+
+                <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
+            </div>
+
+            <!-- Home -->
+            <a href="{% url 'ecommerce:home' %}" class="flex items-center space-x-2 mb-4">
+                <i class="fas fa-home"></i>
+                <span class="sidebar-text">Home</span>
             </a>
 
-            <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-100">
-                <i class="fas fa-bars text-gray-600"></i>
-            </button>
+            <!-- Categories -->
+            <h3 class="font-semibold text-gray-700 mb-2">Categories</h3>
+
+            <!-- ✅ FIX: added id -->
+            <ul id="category-list">
+                {% for category in categories %}
+                <li>
+                    <a href="{% url 'ecommerce:category_detail' category.slug %}" class="flex items-center space-x-2">
+                        <i class="fa fa-tag"></i>
+                        <span>{{ category.name }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <a href="{% url 'ecommerce:add_category' %}" class="mt-2 text-purple-600 font-semibold">
+                <i class="fas fa-plus"></i> Add Category
+            </a>
+            <hr>
+
         </div>
+        <div class="flex gap-2 flex-col">
+            <a href="{% url 'account:logout' %}"
+                class="mt-2 text-white p-3 text-center font-semibold border rounded-lg border-2 bg-red-500 ">
+                Logout
+            </a>
+            <hr>
+            <div class="text-gray-400 text-sm sidebar-text">
+                &copy; {% now "Y" %} MyStore
+            </div>
+        </div>
+    </aside>
+    {% endblock sidebar %}
 
-        <!-- Home -->
-        <a href="{% url 'ecommerce:home' %}" class="flex items-center space-x-2 mb-4">
-            <i class="fas fa-home"></i>
-            <span class="sidebar-text">Home</span>
-        </a>
+    <!-- Main -->
+    <div class="flex-1 flex flex-col">
 
-        <!-- Categories -->
-        <h3 class="font-semibold text-gray-700 mb-2">Categories</h3>
+        <nav class="bg-white shadow-sm border-b sticky top-0 z-10">
+            <div class="px-8 py-4 flex justify-between">
+                <h1 class="text-2xl font-bold">My Store</h1>
+                <span>{{ user.username }}</span>
+            </div>
+        </nav>
 
-        <!-- ✅ FIX: added id -->
-        <ul id="category-list">
-            {% for category in categories %}
-            <li>
-                <a href="{% url 'ecommerce:category_detail' category.slug %}" class="flex items-center space-x-2">
-                    <i class="fa fa-tag"></i>
-                    <span>{{ category.name }}</span>
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
+        <main class="flex-1 p-8">
+            {% block content %}{% endblock %}
+        </main>
 
-        <a href="{% url 'ecommerce:add_category' %}" class="mt-2 text-purple-600 font-semibold">
-            <i class="fas fa-plus"></i> Add Category
-        </a>
     </div>
 
-    <div class="text-gray-400 text-sm sidebar-text">
-        &copy; {% now "Y" %} MyStore
-    </div>
-</aside>
-
-<!-- Main -->
-<div class="flex-1 flex flex-col">
-
-<nav class="bg-white shadow-sm border-b sticky top-0 z-10">
-    <div class="px-8 py-4 flex justify-between">
-        <h1 class="text-2xl font-bold">My Store</h1>
-        <span>{{ user.username }}</span>
-    </div>
-</nav>
-
-<main class="flex-1 p-8">
-{% block content %}{% endblock %}
-</main>
-
-</div>
-
-<script>
-/* ✅ FIX: Proper CSRF token handling */
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-const csrftoken = getCookie('csrftoken');
-
-document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.getElementById('sidebar');
-    const toggleButton = document.getElementById('sidebar-toggle');
-
-    toggleButton.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-    });
-
-    /* ✅ FIX: Guard modal-related code */
-    const modal = document.getElementById('add-category-modal');
-    const form = document.getElementById('add-category-form');
-    const categoryList = document.getElementById('category-list');
-
-    if (form && categoryList) {
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-
-            fetch("{% url 'ecommerce:add_category' %}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    name: form.name.value
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="/category/${data.slug}/">${data.name}</a>`;
-                    categoryList.appendChild(li);
-                    form.reset();
+    <script>
+        /* ✅ FIX: Proper CSRF token handling */
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
                 }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const toggleButton = document.getElementById('sidebar-toggle');
+
+            toggleButton.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
             });
+
+            /* ✅ FIX: Guard modal-related code */
+            const modal = document.getElementById('add-category-modal');
+            const form = document.getElementById('add-category-form');
+            const categoryList = document.getElementById('category-list');
+
+            if (form && categoryList) {
+                form.addEventListener('submit', e => {
+                    e.preventDefault();
+
+                    fetch("{% url 'ecommerce:add_category' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            name: form.name.value
+                        })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                const li = document.createElement('li');
+                                li.innerHTML = `<a href="/category/${data.slug}/">${data.name}</a>`;
+                                categoryList.appendChild(li);
+                                form.reset();
+                            }
+                        });
+                });
+            }
         });
-    }
-});
-</script>
+    </script>
 
 </body>
+
 </html>

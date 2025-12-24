@@ -4,11 +4,15 @@ from django.utils.text import slugify
 from django.core.mail import send_mail
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import  AbstractUser 
 
 
 # ============================
 # CATEGORY MODEL
 # ============================
+class CustomUser(AbstractUser):
+    custom_field = models.CharField(max_length=100, blank=True)
+
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200, unique=True, db_index=True, blank=True)

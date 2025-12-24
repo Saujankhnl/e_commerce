@@ -81,7 +81,7 @@
         {% endif %}
 
         <!-- Login Form -->
-        <form method="POST" action="{% url 'account:admin_page' %}" id="loginForm">
+        <form method="POST" action="{% url 'account:admin_login' %}" id="loginForm">
             {% csrf_token %}
             
             <!-- Username Field -->

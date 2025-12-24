@@ -6,19 +6,36 @@ from ecommerce.models import Category  # ✅ correct model
 from .models import Product
 from django.contrib import messages
 from .forms import ProductForm
+from .forms import CustomUserCreationForm
+from django.contrib.auth.decorators import login_required
 
+
+def register(request):
+    if request.method == "POST":
+        print(request.POST)
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.email = request.POST.get("email")
+            user.save()
+            messages.success(request, "Account created successfully!")
+            return redirect("account:user_login")
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, "ecommerce/register.html", {"form": form})
+
+
+@login_required
 def home(request):
     """
     Home page view displaying all categories and products
     """
     categories = Category.objects.all()
     products = Product.objects.filter(available=True)
-    
-    context = {
-        'categories': categories,
-        'products': products
-    }
-    return render(request, 'ecommerce/home.html', context)
+
+    context = {"categories": categories, "products": products}
+    return render(request, "ecommerce/home.html", context)
 
 
 def product_list(request, category_slug=None):
@@ -27,22 +44,22 @@ def product_list(request, category_slug=None):
     """
     # Get all categories for sidebar - FIXED: This is the key issue
     categories = Category.objects.all()
-    
+
     # Get all available products - FIXED: Use filter() not all() with arguments
     products = Product.objects.filter(available=True)
     category = None
-    
+
     # If category slug is provided, filter by it
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = category.products.filter(available=True)
-    
+
     context = {
-        'category': category,
-        'products': products,
-        'categories': categories,  # FIXED: Ensure categories are always passed
+        "category": category,
+        "products": products,
+        "categories": categories,  # FIXED: Ensure categories are always passed
     }
-    return render(request, 'ecommerce/product_list.html', context)
+    return render(request, "ecommerce/product_list.html", context)
 
 
 def product_detail(request, slug):
@@ -50,17 +67,17 @@ def product_detail(request, slug):
     Product detail view
     """
     product = get_object_or_404(Product, slug=slug)
-    cart_product_form = CartAddProductForm(initial={'quantity': 1, 'override': False})
-    
+    cart_product_form = CartAddProductForm(initial={"quantity": 1, "override": False})
+
     # FIXED: Also include categories in product detail view if needed in sidebar
     categories = Category.objects.all()
-    
+
     context = {
-        'product': product,
-        'cart_product_form': cart_product_form,
-        'categories': categories,
+        "product": product,
+        "cart_product_form": cart_product_form,
+        "categories": categories,
     }
-    return render(request, 'ecommerce/product_detail.html', context)
+    return render(request, "ecommerce/product_detail.html", context)
 
 
 def add_category(request):
@@ -68,13 +85,18 @@ def add_category(request):
         form = CategoryForm(request.POST)
         if form.is_valid():
             category = form.save()
-            messages.success(request, f"Category '{category.name}' created successfully in Ecommerce app!")
-            return redirect('ecommerce:home')
+            messages.success(
+                request,
+                f"Category '{category.name}' created successfully in Ecommerce app!",
+            )
+            return redirect("ecommerce:home")
         else:
-            messages.error(request, "Category creation failed. Please correct the errors below.")
+            messages.error(
+                request, "Category creation failed. Please correct the errors below."
+            )
     else:
         form = CategoryForm()
-    
+
     return render(request, "ecommerce/category_add.html", {"form": form})
 
 
@@ -93,30 +115,33 @@ def category_detail(request, slug=None):
         products = Product.objects.filter(available=True)
 
     context = {
-        'category': category,
-        'categories': categories,
-        'products': products,
+        "category": category,
+        "categories": categories,
+        "products": products,
     }
     return render(request, "ecommerce/category_detail.html", context)
+
 
 # FIXED: Remove duplicate function
 # def ecommerce_home(request):
 #     categories = Category.objects.all()
 #     return render(request, "ecommerce/product_list.html", {"categories": categories})
 
+
 def admin_dashboard(request):
     categories = Category.objects.all()  # From ecommerce app
-    products = Product.objects.all()     # From ecommerce app
-    
+    products = Product.objects.all()  # From ecommerce app
+
     context = {
-        'categories': categories,
-        'products': products,
-        'total_sales': 12500.00,  # Replace with actual calculation
-        'total_items_sold': 150,   # Replace with actual calculation
-        'available_products': products.filter(available=True).count(),
-        'year': datetime.now().year,
+        "categories": categories,
+        "products": products,
+        "total_sales": 12500.00,  # Replace with actual calculation
+        "total_items_sold": 150,  # Replace with actual calculation
+        "available_products": products.filter(available=True).count(),
+        "year": datetime.now().year,
     }
-    return render(request, 'admin_dashboard.html', context)
+    return render(request, "admin_dashboard.html", context)
+
 
 # def add_product_to_category(request, category_slug):
 #     category = get_object_or_404(Category, slug=category_slug)
@@ -137,29 +162,24 @@ def admin_dashboard(request):
 #     })
 
 
-
 def add_product(request):
     """Handle product creation with proper Django form validation"""
     categories = Category.objects.all()
-    
-    if request.method == 'POST':
+
+    if request.method == "POST":
         # Use Django form for proper validation and data handling
         form = ProductForm(request.POST, request.FILES)
-        
+
         if form.is_valid():
             try:
                 product = form.save()
                 messages.success(
-                    request, 
-                    f'Product "{product.name}" created successfully!'
+                    request, f'Product "{product.name}" created successfully!'
                 )
                 # Redirect to the new product's detail page or product list
-                return redirect('ecommerce:product_detail', slug=product.slug)
+                return redirect("ecommerce:product_detail", slug=product.slug)
             except Exception as e:
-                messages.error(
-                    request, 
-                    f'Error saving product: {str(e)}'
-                )
+                messages.error(request, f"Error saving product: {str(e)}")
         else:
             # Form has errors, show them to user
             for field, errors in form.errors.items():
@@ -168,36 +188,41 @@ def add_product(request):
     else:
         form = ProductForm()
 
-    return render(request, 'ecommerce/add_product.html', {
-        'form': form,
-        'categories': categories
-    })
+    return render(
+        request, "ecommerce/add_product.html", {"form": form, "categories": categories}
+    )
+
 
 # def products_by_category(request, category_slug):
 #     # Fetch category by slug
 #     category = get_object_or_404(Category, slug=category_slug)
-    
+
 #     # Fetch products belonging to this category
 #     products = Product.objects.filter(category=category, available=True)
-    
+
 #     # Pass to template
 #     return render(request, 'products_by_category.html', {
 #         'category': category,
 #         'products': products,
 #     })
 
+
 def products_by_category(request, category_slug):
     """Show all products under a specific category"""
     category = get_object_or_404(Category, slug=category_slug)
     products = Product.objects.filter(category=category, available=True)
 
-    return render(request, 'products_by_category.html', {
-        'category': category,
-        'products': products,
-    })
+    return render(
+        request,
+        "products_by_category.html",
+        {
+            "category": category,
+            "products": products,
+        },
+    )
 
 
 def category_list(request):
     categories = Category.objects.all()
     print("Category list view accessed")
-    return render(request, 'ecommerce/category_list.html' , {'categories': categories})
+    return render(request, "ecommerce/category_list.html", {"categories": categories})
