@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Register | E-Commerce</title>
@@ -21,7 +22,7 @@
             width: 100%;
             max-width: 400px;
             border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         h2 {
@@ -88,85 +89,72 @@
         }
     </style>
 </head>
+
 <body>
-<div class="register-box">
-    <h2>Create Account</h2>
+    <div class="register-box">
+        <h2>Create Account</h2>
 
-    <form method="POST" onsubmit="return validateForm()">
-        {% csrf_token %}
+        <form method="POST" action="{% url 'ecommerce:register' %}" `>
+            {% csrf_token %}
 
-        <label>Username</label>
-        <input type="text" name="username" id="username" required>
+            <label>Username</label>
+            <input type="text" name="username" id="username" required>
 
-        <label>Email</label>
-        <input type="email" name="email" id="email" required>
+            <label>Email</label>
+            <input type="email" name="email" id="email" required>
 
-        <label>Password</label>
-        <input type="password" name="password1" id="password1" required>
+            <label>Password</label>
+            <input type="password" name="password1" id="password1" required>
 
-        <label>Confirm Password</label>
-        <input type="password" name="password2" id="password2" required>
+            <label>Confirm Password</label>
+            <input type="password" name="password2" id="password2" required>
 
-        <div id="error-msg" class="error">
-            {% if form.errors %}
+            <div id="error-msg" class="error">
+                {% if form.errors %}
                 {% for field in form %}
-                    {% for error in field.errors %}
-                        <div>{{ error }}</div>
-                    {% endfor %}
+                {% for error in field.errors %}
+                <div>{{ error }}</div>
+                {% endfor %}
                 {% endfor %}
                 {% for error in form.non_field_errors %}
-                    <div>{{ error }}</div>
+                <div>{{ error }}</div>
                 {% endfor %}
-            {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- Anchor tag acting like submit button -->
+            <button class="btn" type="submit">
+                Register
+            </button>
+        </form>
+
+        <div class="login-link">
+            Already have an account?
+            <a href="{% url 'account:user_login' %}">Login</a>
         </div>
-
-        <!-- Anchor tag acting like submit button -->
-        <a href="{% url 'account:user_login' %}" class="btn">
-            Register
-        </a>
-    </form>
-
-    <div class="login-link">
-        Already have an account?
-        <a href="{% url 'account:user_login' %}">Login</a>
     </div>
-</div>
 
-<script>
-    function validateForm() {
-        const p1 = document.getElementById("password1").value;
-        const p2 = document.getElementById("password2").value;
-        const error = document.getElementById("error-msg");
+    <script>
+        function validateForm() {
+            const p1 = document.getElementById("password1").value;
+            const p2 = document.getElementById("password2").value;
+            const error = document.getElementById("error-msg");
 
-        if (p1 !== p2) {
-            error.innerText = "Passwords do not match!";
-            return false;
+            if (p1 !== p2) {
+                error.innerText = "Passwords do not match!";
+                return false;
+            }
+
+            if (p1.length < 8) {
+                error.innerText = "Password must be at least 8 characters";
+                return false;
+            }
+
+            error.innerText = "";
+            return true;
         }
-
-        if (p1.length < 8) {
-            error.innerText = "Password must be at least 8 characters";
-            return false;
-        }
-
-        error.innerText = "";
-        return true;
-    }
-    function registerUser() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password1").value.trim();
-
-    if (username === "" || password === "") {
-        alert("All fields required");
-        return;
-    }
-
-    // Save for login page
-    localStorage.setItem("reg_username", username);
-    localStorage.setItem("reg_password", password);
-
-    window.location.href = "{% url 'ecommerce:login' %}";
-}
-</script>
+    </script>
 
 </body>
+
 </html>
