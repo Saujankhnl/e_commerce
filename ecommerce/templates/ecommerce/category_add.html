@@ -96,6 +96,17 @@
       </a>
     </div>
   </form>
+
+  <!-- All Categories List -->
+  <hr class="my-8">
+  <h3 class="text-2xl font-semibold mb-4 text-gray-700">All Categories</h3>
+  <ul class="list-disc list-inside space-y-2 text-gray-600">
+      {% for category in categories %}
+          <li>{{ category.name }}</li>
+      {% empty %}
+          <li>No categories added yet.</li>
+      {% endfor %}
+  </ul>
 </div>
 
 <!-- Enhanced CSS -->
@@ -103,61 +114,15 @@
   .fade-in {
     animation: fadeIn 0.8s ease-in-out;
   }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .animate-bounce-in {
-    animation: bounceIn 0.6s ease-in-out;
-  }
-  
-  @keyframes bounceIn {
-    0% { transform: scale(0.8); opacity: 0; }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  
-  .form-input:focus {
-    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
-    border-color: #9333ea;
-  }
-  
-  .form-input.error {
-    border-color: #dc2626;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-  }
-  
-  .form-group {
-    transition: all 0.3s ease;
-  }
-  
-  .loading {
-    opacity: 0.7;
-    pointer-events: none;
-  }
-  
-  .success-check {
-    color: #10b981;
-    animation: checkmark 0.5s ease-in-out;
-  }
-  
-  @keyframes checkmark {
-    0% { transform: scale(0); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-  }
-  
-  .pulse {
-    animation: pulse 2s infinite;
-  }
-  
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .animate-bounce-in { animation: bounceIn 0.6s ease-in-out; }
+  @keyframes bounceIn { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+
+  .form-input:focus { box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1); border-color: #9333ea; }
+  .form-input.error { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1); }
+  .form-group { transition: all 0.3s ease; }
+  .loading { opacity: 0.7; pointer-events: none; }
 </style>
 
 <!-- Enhanced JavaScript -->
@@ -170,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const submitBtn = document.getElementById('submit-btn');
   const form = document.querySelector('.form-validate');
 
-  // Slug Auto-generation
   function generateSlug(text) {
     return text.toLowerCase().trim()
       .replace(/[^\w\s-]/g, '')
@@ -180,142 +144,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (nameField && slugField) {
     nameField.addEventListener('input', function() {
-      if (!slugField.dataset.manualEdit && nameField.value.trim()) {
-        slugField.value = generateSlug(nameField.value);
-        validateSlug(slugField.value);
-      }
-      validateField(nameField);
+      if (!slugField.dataset.manualEdit && nameField.value.trim()) slugField.value = generateSlug(nameField.value);
     });
-
     slugField.addEventListener('input', function() {
-      if (slugField.value !== generateSlug(nameField.value)) {
-        slugField.dataset.manualEdit = 'true';
-      } else {
-        delete slugField.dataset.manualEdit;
-      }
-      validateSlug(slugField.value);
-    });
-
-    slugField.addEventListener('focus', function() {
-      if (slugField.value === '') delete slugField.dataset.manualEdit;
+      slugField.dataset.manualEdit = slugField.value !== generateSlug(nameField.value) ? 'true' : '';
     });
   }
 
-  // Character Count for Description
   if (descriptionField && charCount) {
     descriptionField.addEventListener('input', function() {
       const length = descriptionField.value.length;
       charCount.textContent = `${length}/500`;
-      
-      if (length > 500) {
-        charCount.classList.add('text-red-500');
-        descriptionField.classList.add('error');
-      } else {
-        charCount.classList.remove('text-red-500');
-        descriptionField.classList.remove('error');
-      }
+      if(length>500) { charCount.classList.add('text-red-500'); descriptionField.classList.add('error'); }
+      else { charCount.classList.remove('text-red-500'); descriptionField.classList.remove('error'); }
     });
-    
-    // Initialize character count
     charCount.textContent = `${descriptionField.value.length}/500`;
   }
 
-  // Field Validation
-  function validateField(field) {
-    if (field.value.trim() === '') {
-      field.classList.add('error');
-      return false;
-    } else {
-      field.classList.remove('error');
-      return true;
-    }
-  }
-
-  function validateSlug(slug) {
-    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-    if (slug && !slugRegex.test(slug)) {
-      slugField.classList.add('error');
-      return false;
-    } else {
-      slugField.classList.remove('error');
-      return true;
-    }
-  }
-
-  // Form Submission Enhancement
   if (form) {
     form.addEventListener('submit', function(e) {
-      let isValid = true;
-      
-      // Validate required fields
-      if (!validateField(nameField)) isValid = false;
-      if (slugField.value && !validateSlug(slugField.value)) isValid = false;
-      
-      if (!isValid) {
-        e.preventDefault();
-        showNotification('Please correct the errors before submitting.', 'error');
-        return;
-      }
-      
-      // Show loading state
+      if(nameField.value.trim() === '') { e.preventDefault(); nameField.classList.add('error'); return; }
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
       submitBtn.disabled = true;
       submitBtn.classList.add('loading');
     });
   }
-
-  // Real-time Validation
-  [nameField, slugField].forEach(field => {
-    if (field) {
-      field.addEventListener('blur', function() {
-        if (field === nameField) validateField(field);
-        if (field === slugField && field.value) validateSlug(field.value);
-      });
-    }
-  });
-
-  // Notification System
-  function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300 ${
-      type === 'error' ? 'bg-red-500 text-white' : 
-      type === 'success' ? 'bg-green-500 text-white' : 
-      'bg-blue-500 text-white'
-    }`;
-    notification.innerHTML = `
-      <div class="flex items-center">
-        <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'} mr-2"></i>
-        <span>${message}</span>
-      </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => notification.style.transform = 'translateX(0)', 100);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-      notification.style.transform = 'translateX(100%)';
-      setTimeout(() => notification.remove(), 300);
-    }, 5000);
-  }
-
-  // Auto-focus on name field
-  if (nameField) {
-    nameField.focus();
-  }
-
-  // Add some interactive effects
-  document.querySelectorAll('.form-input').forEach(input => {
-    input.addEventListener('focus', function() {
-      this.parentElement.classList.add('ring-2', 'ring-purple-200', 'rounded-lg');
-    });
-    
-    input.addEventListener('blur', function() {
-      this.parentElement.classList.remove('ring-2', 'ring-purple-200', 'rounded-lg');
-    });
-  });
 });
 </script>
 {% endblock %}
