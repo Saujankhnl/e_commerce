@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import  AbstractUser 
 
 
+
 # ============================
 # CATEGORY MODEL
 # ============================
@@ -15,21 +16,19 @@ class CustomUser(AbstractUser):
 
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    slug = models.SlugField(max_length=200, unique=True, db_index=True, blank=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = "Categories"
         ordering = ["name"]
-        app_label = "ecommerce"  # Ensure correct app 
-        db_table = "ecommerce_category"  # Custom table name
+        db_table = "ecommerce_category"
 
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
-        """Auto-generate a unique slug if not provided"""
         if not self.slug:
             base_slug = slugify(self.name)
             slug = base_slug
@@ -42,7 +41,6 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse("ecommerce:category_products", args=[self.slug])
-
 
 # ============================
 # PRODUCT MODEL

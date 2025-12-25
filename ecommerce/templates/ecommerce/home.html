@@ -120,6 +120,18 @@
         </div>
     </section>
 
+    <!-- Categories Section
+    <section class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Categories</h2>
+        <ul class="list-disc list-inside space-y-2 text-gray-700">
+            {% for category in categories %}
+                <li>{{ category.name }}</li>
+            {% empty %}
+                <li>No categories found</li>
+            {% endfor %}
+        </ul>
+    </section> -->
+
     <!-- Testimonials -->
     <section class="mb-16">
         <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">What Our Shoppers Say</h2>
@@ -130,7 +142,6 @@
                     <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold mr-4">
                         {{ review.initials }}
                     </div>
-                    
                 </div>
                 <p class="text-gray-600 italic">"{{ review.comment }}"</p>
             </div>
