@@ -103,22 +103,71 @@
             <img src="{% static 'images/google.png' %}" class="h-12 grayscale hover:grayscale-0 transition" alt="google">
         </div>
     </section>
+<!-- Newsletter -->
+<section class="mb-16">
+    <div 
+        class="max-w-4xl mx-auto border border-gray-200 rounded-xl p-8 sm:p-10"
+        style="
+            background: linear-gradient(180deg, #ffffff, #f9fafb);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            transition: box-shadow 0.3s ease;
+        "
+        onmouseover="this.style.boxShadow='0 15px 35px rgba(0,0,0,0.08)'"
+        onmouseout="this.style.boxShadow='0 10px 25px rgba(0,0,0,0.06)'"
+    >
+        
+        <h2 
+            class="text-2xl font-semibold text-gray-900 mb-2 text-center"
+            style="letter-spacing: 0.3px;"
+        >
+            Subscribe to our newsletter
+        </h2>
 
-    <!-- Newsletter -->
-    <section class="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-2xl p-10 text-white mb-16 relative overflow-hidden">
-        <div class="relative z-10 max-w-3xl mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-4">Stay in the Loop</h2>
-            <p class="text-purple-100 mb-8 text-lg">Get notified about upcoming sales, offers, and events directly in your inbox!</p>
-            
-            <form class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
-                <input type="email" placeholder="Enter your email" 
-                       class="flex-1 px-5 py-4 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800">
-                <button type="submit" class="bg-white text-purple-600 font-semibold px-8 py-4 rounded-xl hover:bg-gray-100 transition-colors shadow-lg">
-                    Subscribe
-                </button>
-            </form>
-        </div>
-    </section>
+        <p 
+            class="text-gray-600 text-center mb-6"
+            style="max-width: 520px; margin-left: auto; margin-right: auto;"
+        >
+            Get product updates, offers, and announcements directly in your inbox.
+        </p>
+
+        <form 
+            id="newsletterForm"
+            class="flex flex-col sm:flex-row items-center gap-3 max-w-2xl mx-auto"
+        >
+            <input
+                type="email"
+                required
+                placeholder="Enter your email"
+                class="w-full sm:flex-1 px-4 py-3 rounded-md border border-gray-300 focus:outline-none"
+                style="
+                    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+                "
+                onfocus="this.style.borderColor='#6366f1'; this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'"
+                onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+            />
+
+            <button
+                type="submit"
+                class="w-full sm:w-auto bg-indigo-600 text-white font-medium px-6 py-3 rounded-md"
+                style="
+                    transition: background-color 0.2s ease, transform 0.2s ease;
+                "
+                onmouseover="this.style.transform='translateY(-1px)'"
+                onmouseout="this.style.transform='translateY(0)'"
+            >
+                <span id="btnText">Subscribe</span>
+            </button>
+        </form>
+
+        <p 
+            id="successMsg" 
+            class="hidden text-center mt-4 text-sm text-green-600"
+        >
+            You have been successfully subscribed.
+        </p>
+    </div>
+</section>
+
 
     <!-- Categories Section
     <section class="mb-16">
@@ -179,6 +228,21 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById("seconds").innerText = seconds;
     }, 1000);
 });
+document.getElementById("newsletterForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const btnText = document.getElementById("btnText");
+    const successMsg = document.getElementById("successMsg");
+
+    btnText.textContent = "Processing...";
+
+    setTimeout(() => {
+        btnText.textContent = "Subscribed";
+        successMsg.classList.remove("hidden");
+    }, 800);
+});
+
+
 </script>
 
 {% endblock %}
