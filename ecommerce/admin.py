@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Category, Product
+from .models import Testimonial
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -26,3 +27,9 @@ class ProductAdmin(admin.ModelAdmin):
         return obj.is_in_stock
     is_in_stock.boolean = True  # Shows nice green/red icons
     is_in_stock.short_description = "In Stock"
+
+
+@admin.register(Testimonial)
+class TestimonialAdmin(admin.ModelAdmin):
+    list_display = ('name', 'approved', 'created_at')
+    list_filter = ('approved',)
