@@ -38,39 +38,39 @@
     {% block sidebar %}
     <!-- Sidebar -->
     <aside id="sidebar"
-        class="sidebar w-72 bg-white shadow-lg h-screen sticky top-0 p-6 flex flex-col justify-between transition-all duration-300">
+        class="sidebar w-72 bg-white shadow-lg h-screen sticky top-0 p-4 flex flex-col justify-between transition-all duration-300">
 
-        <div>
+        <!-- SIDEBAR TOP (LOGO SECTION) -->
+        <div class="flex items-center gap-3 px-2 py-3 border-b border-gray-200 mb-3">
             <!-- Logo -->
-            <div class="flex items-center justify-between mb-8">
-                <a href="/" class="flex items-center space-x-2">
-                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
-                        <span class="text-white font-bold text-xl">M</span>
-                    </div>
-                    <span class="logo-text text-2xl font-bold text-gray-800">MyStore</span>
-                </a>
+            <img
+                src="{% static 'images/logo.png' %}"
+                alt="MyStore Logo"
+                class="h-8 w-8 rounded-full object-cover bg-white flex-shrink-0"
+            />
+            <!-- Heading -->
+            <span class="text-lg font-semibold tracking-wide">
+                My Store
+            </span>
+        </div>
 
-                <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-bars text-gray-600"></i>
-                </button>
-            </div>
-
+        <div class="space-y-4">
             <!-- Home -->
-            <a href="{% url 'ecommerce:home' %}" class="flex items-center space-x-2 mb-4 font-semibold">
-                <i class="fas fa-home"></i>
+            <a href="{% url 'ecommerce:home' %}" class="flex items-center space-x-2 font-semibold text-gray-700 hover:text-purple-600 transition-colors">
+                <i class="fas fa-home w-5"></i>
                 <span class="sidebar-text">Home</span>
             </a>
 
             <!-- Categories: only show if categories exist -->
             {% if categories %}
-            <div class="mb-4">
-                <h1 class="text-gray-500 uppercase text-xs font-semibold mb-2"><b>Categories</b></h1>
-                <ul class="space-y-1">
+            <div class="mt-2">
+                <h1 class="text-gray-500 uppercase text-xs font-semibold mb-1"><b>Categories</b></h1>
+                <ul class="space-y-0.5">
                     {% for category in categories %}
                     <li>
                         <a href="{% url 'ecommerce:category_detail' category.slug %}"
-                           class="flex items-center space-x-2 text-gray-900 font-bold hover:text-purple-600 transition-colors">
-                            <i class="fas fa-angle-right text-xs"></i>
+                           class="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors text-sm py-1">
+                            <i class="fas fa-angle-right text-xs w-3"></i>
                             <span>{{ category.name }}</span>
                         </a>
                     </li>
@@ -78,16 +78,15 @@
                 </ul>
             </div>
             {% endif %}
-
         </div>
 
-        <div class="flex gap-2 flex-col">
+        <div class="mt-auto">
             <a href="{% url 'account:logout' %}"
-                class="mt-2 text-white p-3 text-center font-semibold border rounded-lg border-2 bg-red-500 ">
+                class="text-white p-2 text-center font-semibold border rounded-lg bg-red-500 hover:bg-red-600 transition-colors block mb-2">
                 Logout
             </a>
-            <hr>
-            <div class="text-gray-400 text-sm sidebar-text">
+            <hr class="my-2">
+            <div class="text-gray-400 text-xs text-center">
                 &copy; {% now "Y" %} MyStore
             </div>
         </div>
@@ -100,7 +99,7 @@
         <nav class="bg-white shadow-sm border-b sticky top-0 z-10">
             <div class="px-8 py-4 flex justify-between">
                 <h1 class="text-2xl font-bold">My Store</h1>
-                <span>{{ user.username }}</span>
+                <span class="font-medium">{{ user.username }}</span>
             </div>
         </nav>
 
