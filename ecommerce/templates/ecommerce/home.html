@@ -181,23 +181,36 @@
         </ul>
     </section> -->
 
-    <!-- Testimonials -->
-    <section class="mb-16">
-        <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">What Our Shoppers Say</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {% for review in testimonials %}
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-                <div class="flex items-center mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                        {{ review.initials }}
-                    </div>
-                </div>
-                <p class="text-gray-600 italic">"{{ review.comment }}"</p>
-            </div>
-            {% empty %}
-            <p class="text-center text-gray-600">No testimonials yet.</p>
-            {% endfor %}
+    <form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="form_type" value="testimonial">
+
+    <input type="text" name="name" placeholder="Your Name" required
+           class="w-full mb-4 px-4 py-3 border rounded-md">
+
+    <textarea name="message" rows="4" placeholder="Write your experience..." required
+              class="w-full mb-4 px-4 py-3 border rounded-md"></textarea>
+
+    <button type="submit"
+            class="w-full bg-purple-600 text-white py-3 rounded-md hover:bg-purple-700">
+        Submit Testimonial
+    </button>
+</form>
+<br>
+<br>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% for t in testimonials %}
+        <div class="bg-white p-6 rounded-xl shadow border">
+            <p class="text-gray-600 italic">"{{ t.message }}"</p>
+            <p class="mt-4 font-semibold text-gray-800">— {{ t.name }}</p>
         </div>
+    {% empty %}
+        <p class="text-center text-gray-600">
+            No testimonials yet. Be the first!
+        </p>
+    {% endfor %}
+</div>
+
     </section>
 </div>
 
@@ -241,7 +254,6 @@ document.getElementById("newsletterForm").addEventListener("submit", function (e
         successMsg.classList.remove("hidden");
     }, 800);
 });
-
 
 </script>
 

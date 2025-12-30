@@ -8,7 +8,7 @@ from django.contrib import messages
 from .forms import ProductForm
 from .forms import CustomUserCreationForm
 from django.contrib.auth.decorators import login_required
-
+from .models import Testimonial
 
 def register(request):
     if request.method == "POST":
@@ -29,14 +29,48 @@ def register(request):
 @login_required
 def home(request):
     """
-    Home page view displaying all categories and products
+    Home page view:
+    - Displays categories, products, approved testimonials
+    - Handles testimonial form submission
+    - Ready for future forms (newsletter, etc.)
     """
+
+    # ---------- HANDLE POST REQUESTS ----------
+    if request.method == "POST":
+        form_type = request.POST.get("form_type")
+
+        # Handle testimonial form
+        if form_type == "testimonial":
+            name = request.POST.get("name")
+            message = request.POST.get("message")
+
+            if name and message:
+                Testimonial.objects.create(
+                    name=name,
+                    message=message
+                )
+
+            # Prevent duplicate submission on refresh
+            return redirect("ecommerce:home")
+
+        # Handle newsletter form (future use)
+        elif form_type == "newsletter":
+            pass  # You can implement later
+
+    # ---------- HANDLE GET REQUEST ----------
     categories = Category.objects.all()
     products = Product.objects.filter(available=True)
+    testimonials = Testimonial.objects.filter(
+        approved=True
+    ).order_by("-created_at")
 
-    context = {"categories": categories, "products": products}
+    context = {
+        "categories": categories,
+        "products": products,
+        "testimonials": testimonials,
+    }
+
     return render(request, "ecommerce/home.html", context)
-
 
 def product_list(request, category_slug=None):
     """

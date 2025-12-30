@@ -146,3 +146,11 @@ class Sale(models.Model):
         self.product.save()
 
 
+class Testimonial(models.Model):
+    name = models.CharField(max_length=100)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    approved = models.BooleanField(default=True)  # admin control
+
+    def __str__(self):
+        return self.name
